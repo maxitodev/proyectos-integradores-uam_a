@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ci-ok:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Revisar que estén los documentos
+        run: |
+          for f in README.md docs/historias.md docs/eleccion.md docs/propuesta.md; do
+            test -f "$f" || { echo "Falta $f"; exit 1; }
+          done
+
+      - name: Revisar que no se suba el .env
+        run: |
+          if git ls-files --error-unmatch .env 2>/dev/null; then
+            echo "El .env no se debe subir"
+            exit 1
+          fi

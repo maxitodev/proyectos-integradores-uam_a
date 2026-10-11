@@ -1,0 +1,19 @@
+# Secretos (el .env.example sí se sube)
+.env
+.env.*
+!.env.example
+
+# Datos de la base de datos del contenedor
+pgdata/
+
+# Dependencias y compilados
+node_modules/
+dist/
+build/
+.gradle/
+.idea/
+local.properties
+
+# Archivos del sistema
+Thumbs.db
+.DS_Store
