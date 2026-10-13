@@ -17,7 +17,7 @@ jobs:
 
       - name: Revisar que estén los documentos
         run: |
-          for f in README.md docs/historias.md docs/eleccion.md docs/propuesta.md; do
+          for f in README.md docs/eleccion.md docs/propuesta.md; do
             test -f "$f" || { echo "Falta $f"; exit 1; }
           done
 

@@ -12,7 +12,7 @@ Profesor: M. en C. Gabriel Hurtado Avilés
 
 ## Proyectos
 
-1. **App de salones** (obligatoria): navegación en interiores con realidad aumentada. Las historias de usuario están en [docs/historias.md](docs/historias.md).
+1. **App de salones** (obligatoria): navegación en interiores con realidad aumentada. Las historias de usuario están como issues en el tablero del equipo.
 2. **Reproductor de música MP3** (idea propia, con Next.js y Supabase): por qué lo elegimos en [docs/eleccion.md](docs/eleccion.md) y la ficha en [docs/propuesta.md](docs/propuesta.md).
 
 ## Cómo trabajamos
