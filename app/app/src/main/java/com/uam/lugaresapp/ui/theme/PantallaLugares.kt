@@ -1,12 +1,19 @@
 package com.uam.lugaresapp.ui.theme
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -16,23 +23,58 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
 import androidx.compose.material.icons.automirrored.rounded.Notes
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.AddLocationAlt
+import androidx.compose.material.icons.rounded.Apartment
+import androidx.compose.material.icons.rounded.ArrowOutward
+import androidx.compose.material.icons.rounded.CloudOff
+import androidx.compose.material.icons.rounded.DeleteOutline
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.ErrorOutline
+import androidx.compose.material.icons.rounded.Layers
+import androidx.compose.material.icons.rounded.Place
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.SearchOff
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedAssistChip
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.uam.lugaresapp.R
 import com.uam.lugaresapp.data.ApiClient
 import com.uam.lugaresapp.data.Lugar
 import com.uam.lugaresapp.data.Sesion
@@ -46,21 +88,17 @@ fun PantallaLugares(onCerrarSesion: () -> Unit) {
     val scope = rememberCoroutineScope()
     var lugares by remember { mutableStateOf<List<Lugar>>(emptyList()) }
     var cargando by remember { mutableStateOf(true) }
-    var refrescando by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
-    var mostrarForm by remember { mutableStateOf(false) }
-    var editando by remember { mutableStateOf<Lugar?>(null) }
-    var errorForm by remember { mutableStateOf<String?>(null) }
-    var guardando by remember { mutableStateOf(false) }
-    var aBorrar by remember { mutableStateOf<Lugar?>(null) }
-    var confirmarCerrarSesion by remember { mutableStateOf(false) }
-
-    // Search and filter states
     var busqueda by remember { mutableStateOf("") }
-    var mostrarBuscador by remember { mutableStateOf(false) }
-    var filtroEdificioSeleccionado by remember { mutableStateOf<String?>(null) }
+    var edificioActivo by remember { mutableStateOf<String?>(null) }
+    var formularioVisible by remember { mutableStateOf(false) }
+    var lugarEnEdicion by remember { mutableStateOf<Lugar?>(null) }
+    var guardando by remember { mutableStateOf(false) }
+    var errorFormulario by remember { mutableStateOf<String?>(null) }
+    var porBorrar by remember { mutableStateOf<Lugar?>(null) }
+    var confirmarSalida by remember { mutableStateOf(false) }
 
-    fun manejar(e: Exception): String? {
+    fun resolverError(e: Exception): String? {
         if (e is HttpException && e.code() == 401) {
             Sesion.cerrar()
             onCerrarSesion()
@@ -68,766 +106,305 @@ fun PantallaLugares(onCerrarSesion: () -> Unit) {
         }
         return mensajeError(e)
     }
-
-    fun cargar(esRefresco: Boolean = false) {
+    fun cargar() {
         scope.launch {
-            if (esRefresco) refrescando = true else cargando = true
+            cargando = true
             error = null
             try {
                 lugares = ApiClient.api.lugares()
             } catch (e: Exception) {
-                error = manejar(e)
+                error = resolverError(e)
             } finally {
                 cargando = false
-                refrescando = false
+            }
+        }
+    }
+    fun guardar(lugar: Lugar) {
+        scope.launch {
+            guardando = true
+            errorFormulario = null
+            try {
+                if (lugar.id == null) ApiClient.api.crear(lugar)
+                else ApiClient.api.actualizar(lugar.id, lugar)
+                formularioVisible = false
+                cargar()
+            } catch (e: Exception) {
+                errorFormulario = resolverError(e)
+            } finally {
+                guardando = false
+            }
+        }
+    }
+    fun borrar(lugar: Lugar) {
+        scope.launch {
+            try {
+                lugar.id?.let { ApiClient.api.borrar(it) }
+                porBorrar = null
+                cargar()
+            } catch (e: Exception) {
+                error = resolverError(e)
+                porBorrar = null
             }
         }
     }
 
     LaunchedEffect(Unit) { cargar() }
-
-    // Filtered list
-    val lugaresFiltrados = remember(lugares, busqueda, filtroEdificioSeleccionado) {
+    val edificios = remember(lugares) { lugares.map { it.edificio.trim() }.filter { it.isNotBlank() }.distinct().sorted() }
+    val visibles = remember(lugares, busqueda, edificioActivo) {
         lugares.filter { lugar ->
-            val coincideTexto = busqueda.isBlank() ||
-                    lugar.nombre.contains(busqueda, ignoreCase = true) ||
-                    lugar.edificio.contains(busqueda, ignoreCase = true) ||
-                    lugar.descripcion.contains(busqueda, ignoreCase = true) ||
-                    lugar.piso.toString().contains(busqueda)
-
-            val coincideEdificio = filtroEdificioSeleccionado == null ||
-                    lugar.edificio.equals(filtroEdificioSeleccionado, ignoreCase = true)
-
-            coincideTexto && coincideEdificio
+            val texto = busqueda.trim()
+            (texto.isBlank() || listOf(lugar.nombre, lugar.edificio, lugar.descripcion, lugar.piso.toString())
+                .any { it.contains(texto, ignoreCase = true) }) &&
+                (edificioActivo == null || lugar.edificio.equals(edificioActivo, ignoreCase = true))
         }
     }
-
-    val edificiosDisponibles = remember(lugares) {
-        lugares.map { it.edificio.trim() }.filter { it.isNotBlank() }.distinct().sorted()
-    }
-
-    // Refresh icon animation
-    val infiniteTransition = rememberInfiniteTransition(label = "refreshAnim")
-    val anguloRotacion by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(800, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "rotation"
-    )
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(42.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(
-                                    Brush.linearGradient(
-                                        listOf(PrimaryGradientStart, PrimaryGradientEnd)
-                                    )
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "UAM-C",
-                                fontWeight = FontWeight.Black,
-                                fontSize = 11.sp,
-                                color = Color.White,
-                                letterSpacing = 0.5.sp
-                            )
-                        }
-                        Column {
-                            Text(
-                                text = "UAM Cuajimalpa",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "${lugares.size} espacios · Torre Cuajimalpa",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-                },
+                title = { MarcaUamCuajimalpa(compacta = true, detalle = "Directorio de espacios") },
                 actions = {
-                    // Search toggle button
-                    IconButton(
-                        onClick = {
-                            mostrarBuscador = !mostrarBuscador
-                            if (!mostrarBuscador) busqueda = ""
-                        }
-                    ) {
-                        Icon(
-                            imageVector = if (mostrarBuscador) Icons.Rounded.Close else Icons.Rounded.Search,
-                            contentDescription = "Buscar lugares",
-                            tint = if (mostrarBuscador) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                        )
+                    IconButton(onClick = ::cargar, enabled = !cargando) {
+                        Icon(Icons.Rounded.Refresh, "Actualizar espacios")
                     }
-
-                    // Refresh button
-                    IconButton(
-                        onClick = { cargar(esRefresco = true) },
-                        enabled = !refrescando && !cargando
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Refresh,
-                            contentDescription = "Recargar lista",
-                            modifier = Modifier.rotate(if (refrescando) anguloRotacion else 0f),
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    // Logout button
-                    IconButton(onClick = { confirmarCerrarSesion = true }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.Logout,
-                            contentDescription = "Cerrar sesión",
-                            tint = MaterialTheme.colorScheme.error
-                        )
+                    IconButton(onClick = { confirmarSalida = true }) {
+                        Icon(Icons.AutoMirrored.Rounded.Logout, "Cerrar sesión", tint = MaterialTheme.colorScheme.error)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
             )
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                onClick = {
-                    editando = null
-                    errorForm = null
-                    mostrarForm = true
-                },
-                icon = {
-                    Icon(
-                        imageVector = Icons.Rounded.AddLocationAlt,
-                        contentDescription = null,
-                        tint = Color.White
-                    )
-                },
-                text = {
-                    Text(
-                        "Nuevo Espacio",
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                },
+                onClick = { lugarEnEdicion = null; errorFormulario = null; formularioVisible = true },
+                icon = { Icon(Icons.Rounded.AddLocationAlt, null) },
+                text = { Text("Nuevo espacio", fontWeight = FontWeight.Bold) },
                 containerColor = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(20.dp),
-                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp)
+                contentColor = Color.White,
+                shape = RoundedCornerShape(16.dp)
             )
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = padding.calculateTopPadding() + 8.dp, bottom = 98.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            // Animated Search Input Bar
-            AnimatedVisibility(
-                visible = mostrarBuscador,
-                enter = expandVertically() + fadeIn(),
-                exit = shrinkVertically() + fadeOut()
-            ) {
-                Surface(
-                    color = MaterialTheme.colorScheme.surface,
-                    shadowElevation = 4.dp,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)) {
-                        OutlinedTextField(
-                            value = busqueda,
-                            onValueChange = { busqueda = it },
-                            placeholder = { Text("Buscar en Torre Cuajimalpa (aula, piso, lab)...") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Rounded.Search,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            },
-                            trailingIcon = {
-                                if (busqueda.isNotEmpty()) {
-                                    IconButton(onClick = { busqueda = "" }) {
-                                        Icon(
-                                            imageVector = Icons.Rounded.Clear,
-                                            contentDescription = "Borrar búsqueda"
-                                        )
-                                    }
-                                }
-                            },
-                            singleLine = true,
-                            shape = RoundedCornerShape(16.dp),
-                            modifier = Modifier.fillMaxWidth()
-                        )
+            item {
+                CampusHero(
+                    titulo = "Encuentra el lugar indicado.",
+                    subtitulo = "${lugares.size} espacios registrados · Torre Cuajimalpa",
+                    imagen = R.drawable.campus_plaza
+                )
+            }
+            item {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    CampusSectionTag("Explora el campus")
+                    Text("Directorio de espacios", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                    OutlinedTextField(
+                        value = busqueda,
+                        onValueChange = { busqueda = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        leadingIcon = { Icon(Icons.Rounded.Search, null) },
+                        label = { Text("Buscar aula, piso o edificio") },
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                }
+            }
+            if (edificios.isNotEmpty()) {
+                item {
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        item {
+                            FilterChip(
+                                selected = edificioActivo == null,
+                                onClick = { edificioActivo = null },
+                                label = { Text("Todos · ${lugares.size}") }
+                            )
+                        }
+                        items(edificios) { edificio ->
+                            FilterChip(
+                                selected = edificioActivo.equals(edificio, ignoreCase = true),
+                                onClick = { edificioActivo = if (edificioActivo.equals(edificio, true)) null else edificio },
+                                label = { Text(edificio) },
+                                leadingIcon = { Icon(Icons.Rounded.Apartment, null, Modifier.size(16.dp)) }
+                            )
+                        }
                     }
                 }
             }
-
-            // Building Filter Chips
-            if (edificiosDisponibles.isNotEmpty()) {
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
+            when {
+                cargando -> item {
+                    CargandoEspacios()
+                }
+                error != null -> item {
+                    EstadoError(error.orEmpty(), onReintentar = ::cargar)
+                }
+                lugares.isEmpty() -> item {
+                    EstadoVacio(onCrear = { lugarEnEdicion = null; formularioVisible = true })
+                }
+                visibles.isEmpty() -> item {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 42.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Icon(Icons.Rounded.SearchOff, null, modifier = Modifier.size(44.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("No encontramos coincidencias", fontWeight = FontWeight.Bold)
+                        Text("Prueba con otro nombre, piso o edificio.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+                else -> {
                     item {
-                        FilterChip(
-                            selected = filtroEdificioSeleccionado == null,
-                            onClick = { filtroEdificioSeleccionado = null },
-                            label = { Text("Todos (${lugares.size})") },
-                            shape = RoundedCornerShape(12.dp)
+                        Text("${visibles.size} resultado${if (visibles.size == 1) "" else "s"}", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    items(visibles, key = { it.id ?: "${it.nombre}-${it.edificio}-${it.piso}" }) { lugar ->
+                        TarjetaLugar(
+                            lugar = lugar,
+                            onEditar = { lugarEnEdicion = lugar; errorFormulario = null; formularioVisible = true },
+                            onBorrar = { porBorrar = lugar }
                         )
-                    }
-                    items(edificiosDisponibles) { edificio ->
-                        val count = lugares.count { it.edificio.equals(edificio, ignoreCase = true) }
-                        FilterChip(
-                            selected = filtroEdificioSeleccionado.equals(edificio, ignoreCase = true),
-                            onClick = {
-                                filtroEdificioSeleccionado =
-                                    if (filtroEdificioSeleccionado.equals(edificio, ignoreCase = true)) null else edificio
-                            },
-                            label = { Text("Edificio $edificio ($count)") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Rounded.Apartment,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                            },
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                    }
-                }
-            }
-
-            // Main Content Area
-            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                when {
-                    cargando -> {
-                        // Polished Loading State
-                        Column(
-                            modifier = Modifier.align(Alignment.Center),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            CircularProgressIndicator(
-                                strokeWidth = 3.dp,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            Text(
-                                text = "Cargando catálogo de espacios...",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    }
-
-                    error != null -> {
-                        // Error State Card
-                        Card(
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(24.dp)
-                                .fillMaxWidth(),
-                            shape = RoundedCornerShape(24.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
-                            )
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(24.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(14.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.CloudOff,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.error,
-                                    modifier = Modifier.size(48.dp)
-                                )
-                                Text(
-                                    text = "Ocurrió un problema",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onErrorContainer
-                                )
-                                Text(
-                                    text = error ?: "No se pudo conectar al servidor",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = TextAlign.Center,
-                                    color = MaterialTheme.colorScheme.onErrorContainer
-                                )
-                                Button(
-                                    onClick = { cargar() },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.error
-                                    ),
-                                    shape = RoundedCornerShape(14.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Rounded.Refresh,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text("Reintentar")
-                                }
-                            }
-                        }
-                    }
-
-                    lugares.isEmpty() -> {
-                        // Empty State (No Places Added Yet)
-                        Column(
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(32.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(96.dp)
-                                    .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Map,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(48.dp)
-                                )
-                            }
-                            Text(
-                                text = "Espacios de la Unidad Cuajimalpa",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center
-                            )
-                            Text(
-                                text = "Comienza registrando las aulas, laboratorios de docencia, cubículos y talleres de la Torre Cuajimalpa.",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                textAlign = TextAlign.Center
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Button(
-                                onClick = {
-                                    editando = null
-                                    errorForm = null
-                                    mostrarForm = true
-                                },
-                                shape = RoundedCornerShape(16.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Add,
-                                    contentDescription = null
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text("Registrar primer espacio UAM-C")
-                            }
-                        }
-                    }
-
-                    lugaresFiltrados.isEmpty() -> {
-                        // Empty Search / Filter State
-                        Column(
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(32.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(14.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.SearchOff,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(54.dp)
-                            )
-                            Text(
-                                text = "Sin coincidencias",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "No se encontraron lugares con el filtro actual.",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                textAlign = TextAlign.Center
-                            )
-                            TextButton(
-                                onClick = {
-                                    busqueda = ""
-                                    filtroEdificioSeleccionado = null
-                                }
-                            ) {
-                                Text("Limpiar filtros")
-                            }
-                        }
-                    }
-
-                    else -> {
-                        // Places List with Animations
-                        LazyColumn(
-                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 88.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            items(lugaresFiltrados, key = { it.id ?: it.hashCode() }) { lugar ->
-                                TarjetaLugar(
-                                    lugar = lugar,
-                                    onEditar = {
-                                        editando = lugar
-                                        errorForm = null
-                                        mostrarForm = true
-                                    },
-                                    onBorrar = { aBorrar = lugar },
-                                    modifier = Modifier.animateItem()
-                                )
-                            }
-                        }
                     }
                 }
             }
         }
     }
 
-    // Modal Form for Create / Edit
-    if (mostrarForm) {
+    if (formularioVisible) {
         FormularioLugar(
-            inicial = editando,
-            errorServidor = errorForm,
+            inicial = lugarEnEdicion,
+            errorServidor = errorFormulario,
             guardando = guardando,
-            onCancelar = { mostrarForm = false },
-            onGuardar = { lugar ->
-                scope.launch {
-                    guardando = true
-                    errorForm = null
-                    try {
-                        val id = editando?.id
-                        if (id == null) ApiClient.api.crear(lugar)
-                        else ApiClient.api.actualizar(id, lugar)
-                        mostrarForm = false
-                        cargar()
-                    } catch (e: Exception) {
-                        errorForm = manejar(e)
-                    } finally {
-                        guardando = false
-                    }
-                }
-            }
+            onGuardar = ::guardar,
+            onCancelar = { formularioVisible = false; errorFormulario = null }
         )
     }
-
-    // Confirm Delete Dialog
-    aBorrar?.let { lugar ->
+    porBorrar?.let { lugar ->
         AlertDialog(
-            onDismissRequest = { aBorrar = null },
-            icon = {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.errorContainer),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.DeleteOutline,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                }
-            },
-            title = {
-                Text(
-                    text = "Eliminar lugar",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
-            },
-            text = {
-                Text(
-                    text = "¿Estás seguro de que deseas eliminar permanentemente \"${lugar.nombre}\"? Esta acción no se puede deshacer.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center
-                )
-            },
+            onDismissRequest = { porBorrar = null },
+            icon = { Icon(Icons.Rounded.DeleteOutline, null, tint = MaterialTheme.colorScheme.error) },
+            title = { Text("¿Eliminar este espacio?", fontWeight = FontWeight.Bold) },
+            text = { Text("${lugar.nombre} se eliminará del directorio.") },
             confirmButton = {
-                Button(
-                    onClick = {
-                        val id = lugar.id
-                        aBorrar = null
-                        if (id != null) {
-                            scope.launch {
-                                try {
-                                    ApiClient.api.borrar(id)
-                                    cargar()
-                                } catch (e: Exception) {
-                                    error = manejar(e)
-                                }
-                            }
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text("Eliminar")
-                }
+                Button(onClick = { borrar(lugar) }, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)) { Text("Eliminar") }
             },
-            dismissButton = {
-                TextButton(
-                    onClick = { aBorrar = null },
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text("Cancelar")
-                }
-            },
+            dismissButton = { TextButton(onClick = { porBorrar = null }) { Text("Cancelar") } },
             shape = RoundedCornerShape(24.dp)
         )
     }
-
-    // Confirm Logout Dialog
-    if (confirmarCerrarSesion) {
+    if (confirmarSalida) {
         AlertDialog(
-            onDismissRequest = { confirmarCerrarSesion = false },
-            icon = {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.Logout,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                }
-            },
-            title = {
-                Text(
-                    text = "¿Cerrar sesión?",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
-            },
-            text = {
-                Text(
-                    text = "Tendrás que volver a ingresar tus credenciales para acceder.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center
-                )
-            },
+            onDismissRequest = { confirmarSalida = false },
+            title = { Text("¿Cerrar sesión?", fontWeight = FontWeight.Bold) },
+            text = { Text("Tendrás que volver a ingresar tus credenciales.") },
             confirmButton = {
-                Button(
-                    onClick = {
-                        confirmarCerrarSesion = false
-                        Sesion.cerrar()
-                        onCerrarSesion()
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text("Salir")
-                }
+                Button(onClick = { Sesion.cerrar(); onCerrarSesion() }, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)) { Text("Salir") }
             },
-            dismissButton = {
-                TextButton(
-                    onClick = { confirmarCerrarSesion = false },
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text("Cancelar")
-                }
-            },
+            dismissButton = { TextButton(onClick = { confirmarSalida = false }) { Text("Cancelar") } },
             shape = RoundedCornerShape(24.dp)
         )
     }
 }
 
 @Composable
-fun TarjetaLugar(
-    lugar: Lugar,
-    onEditar: () -> Unit,
-    onBorrar: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var expandido by remember { mutableStateOf(false) }
+private fun CargandoEspacios() {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 48.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+        Text("Abriendo el directorio…", color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
 
+@Composable
+private fun EstadoError(mensaje: String, onReintentar: () -> Unit) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { expandido = !expandido },
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+        shape = RoundedCornerShape(24.dp)
     ) {
         Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .animateContentSize()
+            modifier = Modifier.padding(22.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            Icon(Icons.Rounded.CloudOff, null, Modifier.size(42.dp), tint = MaterialTheme.colorScheme.error)
+            Text("No pudimos abrir el directorio", fontWeight = FontWeight.Bold)
+            Text(mensaje, color = MaterialTheme.colorScheme.onErrorContainer)
+            Button(onClick = onReintentar) { Text("Intentar de nuevo") }
+        }
+    }
+}
+
+@Composable
+private fun EstadoVacio(onCrear: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        OncahuiInsignia(88.dp)
+        Text("El directorio espera su primer espacio.", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Text(
+            "Registra aulas, laboratorios, cubículos o talleres de la Unidad.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Button(onClick = onCrear) {
+            Icon(Icons.Rounded.Add, null)
+            Spacer(Modifier.width(7.dp))
+            Text("Registrar espacio")
+        }
+    }
+}
+
+@Composable
+fun TarjetaLugar(lugar: Lugar, onEditar: () -> Unit, onBorrar: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(22.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(18.dp),
+                verticalAlignment = Alignment.Top,
                 horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                // Avatar badge with initials/building
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(
-                            Brush.linearGradient(
-                                listOf(PrimaryLight.copy(alpha = 0.8f), PrimaryDark)
-                            )
-                        ),
-                    contentAlignment = Alignment.Center
+                Surface(
+                    modifier = Modifier.size(54.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    color = MaterialTheme.colorScheme.primary
                 ) {
-                    Text(
-                        text = if (lugar.edificio.isNotBlank()) lugar.edificio.take(2).uppercase() else "U",
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
-                }
-
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = lugar.nombre,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Badge Edificio
-                        Surface(
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Apartment,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(14.dp)
-                                )
-                                Text(
-                                    text = "Edif. ${lugar.edificio}",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        }
-
-                        // Badge Piso
-                        Surface(
-                            color = MaterialTheme.colorScheme.secondaryContainer,
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Layers,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.secondary,
-                                    modifier = Modifier.size(14.dp)
-                                )
-                                Text(
-                                    text = "Piso ${lugar.piso}",
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.secondary
-                                )
-                            }
-                        }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                        Text("PISO", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.ExtraBold, color = Color.White.copy(alpha = .78f), fontSize = 9.sp)
+                        Text(lugar.piso.toString(), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black, color = Color.White)
                     }
                 }
-
-                // Action Buttons
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    IconButton(
-                        onClick = onEditar,
-                        modifier = Modifier
-                            .size(38.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f))
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Edit,
-                            contentDescription = "Editar lugar",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-
-                    IconButton(
-                        onClick = onBorrar,
-                        modifier = Modifier
-                            .size(38.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f))
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.DeleteOutline,
-                            contentDescription = "Borrar lugar",
-                            tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.size(18.dp)
-                        )
+                Column(Modifier.weight(1f)) {
+                    Text(lugar.nombre, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    Text("${lugar.edificio} · Nivel ${lugar.piso}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 3.dp))
+                    if (lugar.descripcion.isNotBlank()) {
+                        Text(lugar.descripcion, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 9.dp))
                     }
                 }
             }
-
-            // Description section
-            if (lugar.descripcion.isNotBlank()) {
-                Spacer(modifier = Modifier.height(10.dp))
-                Surface(
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = lugar.descripcion,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(10.dp),
-                        maxLines = if (expandido) Int.MAX_VALUE else 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = .45f))
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 11.dp, vertical = 7.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AssistChip(
+                    onClick = {},
+                    label = { Text("Edificio ${lugar.edificio}") },
+                    leadingIcon = { Icon(Icons.Rounded.Place, null, Modifier.size(16.dp)) }
+                )
+                Row {
+                    IconButton(onClick = onEditar) { Icon(Icons.Rounded.Edit, "Editar espacio", tint = MaterialTheme.colorScheme.primary) }
+                    IconButton(onClick = onBorrar) { Icon(Icons.Rounded.DeleteOutline, "Eliminar espacio", tint = MaterialTheme.colorScheme.error) }
                 }
             }
         }
@@ -842,167 +419,34 @@ fun FormularioLugar(
     onGuardar: (Lugar) -> Unit,
     onCancelar: () -> Unit
 ) {
-    var nombre by remember { mutableStateOf(inicial?.nombre ?: "") }
-    var edificio by remember { mutableStateOf(inicial?.edificio ?: "") }
-    var piso by remember { mutableStateOf(inicial?.piso?.toString() ?: "") }
-    var descripcion by remember { mutableStateOf(inicial?.descripcion ?: "") }
+    var nombre by remember(inicial) { mutableStateOf(inicial?.nombre.orEmpty()) }
+    var edificio by remember(inicial) { mutableStateOf(inicial?.edificio.orEmpty()) }
+    var piso by remember(inicial) { mutableStateOf(inicial?.piso?.toString().orEmpty()) }
+    var descripcion by remember(inicial) { mutableStateOf(inicial?.descripcion.orEmpty()) }
     var errorLocal by remember { mutableStateOf<String?>(null) }
-
-    val errorActual = errorLocal ?: errorServidor
+    val error = errorLocal ?: errorServidor
 
     AlertDialog(
         onDismissRequest = onCancelar,
         title = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(38.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(
-                            Brush.linearGradient(
-                                listOf(PrimaryGradientStart, PrimaryGradientEnd)
-                            )
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = if (inicial == null) Icons.Rounded.AddLocationAlt else Icons.Rounded.EditLocationAlt,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-                Text(
-                    text = if (inicial == null) "Nuevo Espacio UAM-C" else "Editar Espacio UAM-C",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                CampusSectionTag(if (inicial == null) "Nuevo espacio" else "Editar espacio")
+                Text(if (inicial == null) "Agrega un lugar al campus." else "Actualiza la información.", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             }
         },
         text = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                // Name
-                OutlinedTextField(
-                    value = nombre,
-                    onValueChange = {
-                        nombre = it
-                        errorLocal = null
-                    },
-                    label = { Text("Nombre del espacio") },
-                    placeholder = { Text("Ej: Aula Magna 601, Lab Cómputo 408") },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Rounded.Place,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    },
-                    singleLine = true,
-                    shape = RoundedCornerShape(14.dp),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                // Building and Floor in Row
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    OutlinedTextField(
-                        value = edificio,
-                        onValueChange = {
-                            edificio = it
-                            errorLocal = null
-                        },
-                        label = { Text("Edificio / Sede") },
-                        placeholder = { Text("Ej: Torre, Artificios") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Rounded.Apartment,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        },
-                        singleLine = true,
-                        shape = RoundedCornerShape(14.dp),
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    OutlinedTextField(
-                        value = piso,
-                        onValueChange = {
-                            piso = it
-                            errorLocal = null
-                        },
-                        label = { Text("Piso") },
-                        placeholder = { Text("Ej: 1, 4, 8") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Rounded.Layers,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.secondary
-                            )
-                        },
-                        singleLine = true,
-                        shape = RoundedCornerShape(14.dp),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.weight(1f)
-                    )
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(nombre, { nombre = it; errorLocal = null }, Modifier.fillMaxWidth(), label = { Text("Nombre del espacio") }, leadingIcon = { Icon(Icons.Rounded.Place, null) }, singleLine = true, shape = RoundedCornerShape(14.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    OutlinedTextField(edificio, { edificio = it; errorLocal = null }, Modifier.weight(1f), label = { Text("Edificio") }, singleLine = true, shape = RoundedCornerShape(14.dp))
+                    OutlinedTextField(piso, { piso = it; errorLocal = null }, Modifier.weight(.65f), label = { Text("Piso") }, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), shape = RoundedCornerShape(14.dp))
                 }
-
-                // Description
-                OutlinedTextField(
-                    value = descripcion,
-                    onValueChange = { descripcion = it },
-                    label = { Text("Descripción (opcional)") },
-                    placeholder = { Text("Ej: 35 computadoras Mac, cañón láser y WiFi UAM") },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Rounded.Notes,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    },
-                    minLines = 2,
-                    maxLines = 4,
-                    shape = RoundedCornerShape(14.dp),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                // Animated Error message inside dialog
-                AnimatedVisibility(
-                    visible = errorActual != null,
-                    enter = fadeIn() + expandVertically(),
-                    exit = fadeOut() + shrinkVertically()
-                ) {
-                    Surface(
-                        color = MaterialTheme.colorScheme.errorContainer,
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(10.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.ErrorOutline,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.error,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Text(
-                                text = errorActual ?: "",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onErrorContainer
-                            )
+                OutlinedTextField(descripcion, { descripcion = it }, Modifier.fillMaxWidth(), label = { Text("Descripción") }, leadingIcon = { Icon(Icons.AutoMirrored.Rounded.Notes, null) }, minLines = 2, maxLines = 3, shape = RoundedCornerShape(14.dp))
+                if (error != null) {
+                    Surface(color = MaterialTheme.colorScheme.errorContainer, shape = RoundedCornerShape(12.dp)) {
+                        Row(Modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Rounded.ErrorOutline, null, tint = MaterialTheme.colorScheme.error)
+                            Text(error, Modifier.padding(start = 8.dp), color = MaterialTheme.colorScheme.onErrorContainer, style = MaterialTheme.typography.bodySmall)
                         }
                     }
                 }
@@ -1010,46 +454,22 @@ fun FormularioLugar(
         },
         confirmButton = {
             Button(
-                enabled = !guardando,
                 onClick = {
-                    val p = piso.trim().toIntOrNull()
+                    val nivel = piso.trim().toIntOrNull()
                     when {
-                        nombre.isBlank() -> errorLocal = "El nombre es obligatorio"
-                        edificio.isBlank() -> errorLocal = "El edificio es obligatorio"
-                        p == null -> errorLocal = "El piso debe ser un número entero"
-                        else -> {
-                            errorLocal = null
-                            onGuardar(Lugar(inicial?.id, nombre.trim(), edificio.trim(), p, descripcion.trim()))
-                        }
+                        nombre.isBlank() -> errorLocal = "Escribe el nombre del espacio."
+                        edificio.isBlank() -> errorLocal = "Indica el edificio."
+                        nivel == null -> errorLocal = "El piso debe ser un número."
+                        else -> onGuardar(Lugar(inicial?.id, nombre.trim(), edificio.trim(), nivel, descripcion.trim()))
                     }
                 },
-                shape = RoundedCornerShape(12.dp)
+                enabled = !guardando
             ) {
-                if (guardando) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(16.dp),
-                            color = Color.White,
-                            strokeWidth = 2.dp
-                        )
-                        Text("Guardando...")
-                    }
-                } else {
-                    Text(if (inicial == null) "Crear espacio" else "Guardar cambios")
-                }
+                if (guardando) CircularProgressIndicator(Modifier.size(18.dp), color = Color.White, strokeWidth = 2.dp)
+                else Text(if (inicial == null) "Guardar espacio" else "Guardar cambios")
             }
         },
-        dismissButton = {
-            TextButton(
-                onClick = onCancelar,
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text("Cancelar")
-            }
-        },
-        shape = RoundedCornerShape(24.dp)
+        dismissButton = { TextButton(onClick = onCancelar) { Text("Cancelar") } },
+        shape = RoundedCornerShape(26.dp)
     )
 }

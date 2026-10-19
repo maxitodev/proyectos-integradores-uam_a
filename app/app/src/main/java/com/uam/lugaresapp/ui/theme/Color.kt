@@ -2,16 +2,19 @@ package com.uam.lugaresapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Primary Brand Colors - Modern Orange / UAM Energetic Palette
-val Primary = Color(0xFFEA580C)               // Vibrant Orange (Tailwind Orange 600)
-val PrimaryLight = Color(0xFFFB923C)          // Bright Tangerine (Orange 400)
-val PrimaryDark = Color(0xFFC2410C)           // Burnt Terracotta (Orange 700)
-val PrimaryGradientStart = Color(0xFFFF7A00)  // Radiant Electric Orange
-val PrimaryGradientEnd = Color(0xFFDC2626)    // Warm Sunset Coral/Red
+// Oncahui palette — a vivid campus orange grounded by panther black.
+val Primary = Color(0xFFE85D04)
+val PrimaryLight = Color(0xFFFFA43A)
+val PrimaryDark = Color(0xFF9E3600)
+val PrimaryGradientStart = Color(0xFFFF9A1F)
+val PrimaryGradientEnd = Color(0xFFE65300)
+val Panther = Color(0xFF17120F)
+val PantherSoft = Color(0xFF352820)
+val Cream = Color(0xFFFFF7ED)
 
 // Accent Colors (Golden Amber & Warm Sunshine)
-val SecondaryWarm = Color(0xFFD97706)         // Warm Honey Amber
-val SecondaryWarmLight = Color(0xFFFBBF24)    // Golden Sunrise
+val SecondaryWarm = Color(0xFFB6470A)
+val SecondaryWarmLight = Color(0xFFFFC55C)
 val SecondaryTeal = SecondaryWarm             // Compatibility alias
 val SecondaryTealLight = SecondaryWarmLight   // Compatibility alias
 val TertiaryAmber = Color(0xFFF59E0B)
@@ -19,20 +22,20 @@ val TertiaryAmberLight = Color(0xFFFDE68A)
 val AccentCoral = Color(0xFFF43F5E)
 
 // Neutral & Backgrounds - Light Theme (Clean Stone with subtle warmth)
-val LightBg = Color(0xFFFAFAF9)
+val LightBg = Color(0xFFFFFBF7)
 val LightSurface = Color(0xFFFFFFFF)
-val LightSurfaceVariant = Color(0xFFF5F3EF)
-val LightOutline = Color(0xFFE7E5E4)
-val LightOnBg = Color(0xFF1C1917)
-val LightOnSurfaceVariant = Color(0xFF78716C)
+val LightSurfaceVariant = Color(0xFFFFF0E2)
+val LightOutline = Color(0xFFF0D6BD)
+val LightOnBg = Panther
+val LightOnSurfaceVariant = Color(0xFF75645A)
 
 // Neutral & Backgrounds - Dark Theme (Warm Obsidian)
-val DarkBg = Color(0xFF0F0B08)
-val DarkSurface = Color(0xFF1A1410)
-val DarkSurfaceVariant = Color(0xFF29201A)
-val DarkOutline = Color(0xFF403229)
-val DarkOnBg = Color(0xFFFAF7F5)
-val DarkOnSurfaceVariant = Color(0xFFA89F95)
+val DarkBg = Color(0xFF17120F)
+val DarkSurface = Color(0xFF211914)
+val DarkSurfaceVariant = Color(0xFF352820)
+val DarkOutline = Color(0xFF5D4637)
+val DarkOnBg = Cream
+val DarkOnSurfaceVariant = Color(0xFFC5B2A6)
 
 // Status Colors
 val StatusSuccess = Color(0xFF16A34A)

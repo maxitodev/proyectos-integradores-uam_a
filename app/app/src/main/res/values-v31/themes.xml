@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 12+: retain the official UAM wordmark in the system splash itself. -->
+    <style name="Theme.LugaresApp.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#17120F</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_oncahui</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/uam_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.LugaresApp</item>
+    </style>
+</resources>

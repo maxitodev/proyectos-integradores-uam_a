@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -21,10 +22,12 @@ import com.uam.lugaresapp.data.Sesion
 import com.uam.lugaresapp.ui.theme.PantallaLogin
 import com.uam.lugaresapp.ui.theme.PantallaLugares
 import com.uam.lugaresapp.ui.theme.PantallaRegistro
+import com.uam.lugaresapp.ui.theme.PantallaBienvenida
 import com.uam.lugaresapp.ui.theme.LugaresAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         Sesion.iniciar(this)
@@ -44,10 +47,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNav() {
     val nav = rememberNavController()
-    val inicio = if (Sesion.token != null) "lugares" else "login"
     NavHost(
         navController = nav,
-        startDestination = inicio,
+        startDestination = "bienvenida",
         enterTransition = {
             fadeIn(animationSpec = tween(350)) + slideInHorizontally(
                 initialOffsetX = { 200 },
@@ -73,6 +75,14 @@ fun AppNav() {
             )
         }
     ) {
+        composable("bienvenida") {
+            PantallaBienvenida(
+                onLista = {
+                    val destino = if (Sesion.token != null) "lugares" else "login"
+                    nav.navigate(destino) { popUpTo("bienvenida") { inclusive = true } }
+                }
+            )
+        }
         composable("login") {
             PantallaLogin(
                 onLoginOk = { nav.navigate("lugares") { popUpTo("login") { inclusive = true } } },

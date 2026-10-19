@@ -1,33 +1,271 @@
-# Proyectos integradores
+# Directorio de espacios · UAM Cuajimalpa
 
-Administración de Proyectos de Software (1151055) · UAM Azcapotzalco · 26-O
+> Práctica 1 · App móvil con API REST, usuarios y Docker
 
-Profesor: M. en C. Gabriel Hurtado Avilés
+Aplicación móvil para registrar y consultar espacios de la Unidad Cuajimalpa de la Universidad Autónoma Metropolitana. Una persona visitante puede crear una cuenta o iniciar sesión; con una sesión válida puede crear, consultar, editar y eliminar registros de espacios.
 
-## Equipo
+## Datos de la práctica
 
-- Max Uriel Sánchez Díaz (2213026327)
-- Daniela Nava Martínez (2223028762)
-- Bryan Tonatiuh Ochoa De La Cruz (2223028771)
+| Dato | Información |
+| --- | --- |
+| UEA | Administración de Proyectos de Software (1151055) |
+| Trimestre | 26-O · otoño de 2026 |
+| Profesor | M. en C. Gabriel Hurtado Avilés |
+| Entrega | 20 de octubre de 2026, 23:59 h |
 
-## Proyectos
+### Integrantes
 
-1. **App de salones** (obligatoria): navegación en interiores con realidad aumentada. Las historias de usuario están como issues en el tablero del equipo.
-2. **Reproductor de música MP3** (idea propia, con Next.js y Supabase): por qué lo elegimos en [docs/eleccion.md](docs/eleccion.md) y la ficha en [docs/propuesta.md](docs/propuesta.md).
+| Integrante | Matrícula |
+| --- | --- |
+| Max Uriel Sánchez Díaz | 2213026327 |
+| Daniela Nava Martínez | 2223028762 |
+| Bryan Tonatiuh Ochoa De La Cruz | 2223028771 |
 
-## Cómo trabajamos
+## Introducción
 
-1. Todo cambio empieza en un issue.
-2. Se trabaja en una rama (`feat/lo-que-sea`), nunca directo en `main`.
-3. Pull Request con `Closes #N`, revisado por alguien que no lo escribió y con el CI en verde.
-4. Cada quien hace sus propios commits.
+El proyecto implementa el esqueleto técnico del proyecto integrador: una app Android en Kotlin que consume una API REST propia. El recurso elegido es `lugares`, porque permite administrar aulas, laboratorios, cubículos, talleres y otros espacios de la Unidad Cuajimalpa.
 
-El `.env` no se sube. Las variables que hagan falta van en `.env.example`.
+Se eligió **Kotlin con Jetpack Compose** para el cliente móvil por su integración nativa con Android y porque permite construir una interfaz declarativa. La comunicación se realiza con **Retrofit**; el backend usa **Node.js con Express** y **PostgreSQL**, ejecutados en contenedores mediante Docker Compose. Esta separación permite que el cliente nunca se conecte directamente a la base de datos.
 
-## Cómo ejecutar
+## Arquitectura y tecnologías
 
-Todavía no hay código. Cuando lo haya, el comando va aquí.
+```text
+App Android (Kotlin + Compose + Retrofit)
+          │  HTTP + Authorization: Bearer <JWT>
+          ▼
+API REST (Node.js + Express)
+          │
+          ▼
+PostgreSQL 16 (contenedor Docker)
+```
 
-## Uso de IA
+| Capa | Tecnología | Función |
+| --- | --- | --- |
+| Cliente móvil | Kotlin, Jetpack Compose, Retrofit | Registro, inicio de sesión y CRUD de espacios. |
+| API | Node.js 22, Express 4 | Endpoints REST, validación y autorización. |
+| Autenticación | bcryptjs, JSON Web Token | Hash de contraseñas y tokens con caducidad. |
+| Datos | PostgreSQL 16.4-alpine | Persistencia de usuarios y lugares. |
+| Contenedores | Docker Compose | Levanta API y base de datos desde cero. |
 
-Usamos Claude (Anthropic) para armar la estructura del repositorio y los borradores de los documentos de `docs/`. Cualquier otro uso se agrega aquí.
+## Funcionalidad
+
+- Registro de cuentas con correo y contraseña de al menos ocho caracteres.
+- Inicio de sesión que devuelve un JWT con caducidad configurable.
+- Persistencia local del token de la sesión en Android.
+- CRUD de `lugares`: crear, listar, consultar por identificador, editar y eliminar.
+- Filtro por edificio y búsqueda por nombre, edificio, piso o descripción.
+- Estados de interfaz: carga, error de conexión, lista vacía y sesión caducada.
+- Cierre de sesión; si la API responde `401`, la app borra el token y vuelve al acceso.
+
+## API REST
+
+URL base local: `http://localhost:5000`
+
+Las rutas de `lugares` requieren la cabecera `Authorization: Bearer <token>`. Sin token, con token alterado o con token caducado, la API responde `401`.
+
+| Método | Ruta | Autenticación | Cuerpo / parámetro | Respuesta esperada |
+| --- | --- | --- | --- | --- |
+| `POST` | `/registro` | No | `email`, `password` | `201` con el usuario creado. |
+| `POST` | `/login` | No | `email`, `password` | `200` con JWT. |
+| `POST` | `/lugares` | Sí | `nombre`, `edificio`, `piso`, `descripcion` | `201` con el lugar creado. |
+| `GET` | `/lugares` | Sí | — | `200` con la lista. |
+| `GET` | `/lugares/:id` | Sí | `id` en la ruta | `200` con el lugar o `404`. |
+| `PUT` | `/lugares/:id` | Sí | Datos completos del lugar | `200` con el lugar actualizado. |
+| `DELETE` | `/lugares/:id` | Sí | `id` en la ruta | `200` con el mensaje de eliminación. |
+
+### Ejemplos de uso
+
+Crear una cuenta:
+
+```bash
+curl -X POST http://localhost:5000/registro \
+  -H "Content-Type: application/json" \
+  -d '{"email":"alumna@uam.mx","password":"contrasena-segura"}'
+```
+
+```json
+{
+  "id": 1,
+  "email": "alumna@uam.mx"
+}
+```
+
+Iniciar sesión:
+
+```bash
+curl -X POST http://localhost:5000/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"alumna@uam.mx","password":"contrasena-segura"}'
+```
+
+```json
+{
+  "token": "<jwt>"
+}
+```
+
+Crear un lugar:
+
+```bash
+curl -X POST http://localhost:5000/lugares \
+  -H "Authorization: Bearer <jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{"nombre":"Cafetería","edificio":"A","piso":2,"descripcion":"Área de alimentos"}'
+```
+
+```json
+{
+  "id": 1,
+  "nombre": "Cafetería",
+  "edificio": "A",
+  "piso": 2,
+  "descripcion": "Área de alimentos",
+  "creado_en": "2026-10-18T00:00:00.000Z"
+}
+```
+
+Consultar lugares:
+
+```bash
+curl http://localhost:5000/lugares \
+  -H "Authorization: Bearer <jwt>"
+```
+
+Actualizar un lugar:
+
+```bash
+curl -X PUT http://localhost:5000/lugares/1 \
+  -H "Authorization: Bearer <jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{"nombre":"Cafetería","edificio":"A","piso":2,"descripcion":"Horario de 08:00 a 18:00"}'
+```
+
+Eliminar un lugar:
+
+```bash
+curl -X DELETE http://localhost:5000/lugares/1 \
+  -H "Authorization: Bearer <jwt>"
+```
+
+```json
+{
+  "mensaje": "Lugar eliminado"
+}
+```
+
+### Códigos de respuesta
+
+| Código | Uso en la API |
+| --- | --- |
+| `200` | Inicio de sesión, lecturas, actualizaciones y eliminación correctas. |
+| `201` | Registro o creación de un lugar correctos. |
+| `400` | Datos faltantes, inválidos o correo previamente registrado. |
+| `401` | Credenciales inválidas o sesión ausente, alterada o caducada. |
+| `404` | Un lugar solicitado no existe. |
+| `500` | Error no controlado del servidor. |
+
+## Cómo levantar el proyecto
+
+### Requisitos
+
+- Docker Desktop con Docker Compose.
+- Android Studio con SDK y emulador Android, o un teléfono Android con depuración USB.
+- JDK 11 o posterior para la app Android.
+
+### 1. Configurar variables de entorno
+
+Desde la raíz del repositorio, crea un archivo `.env` a partir del ejemplo. **No subas `.env` al repositorio.**
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Edita al menos `DB_PASSWORD` y `JWT_SECRET` antes de levantar el sistema.
+
+### 2. Levantar API y base de datos
+
+```bash
+docker compose up -d --build
+docker compose ps
+```
+
+La API queda publicada en el puerto `5000` y PostgreSQL permanece dentro de la red de Docker. Para revisar el arranque:
+
+```bash
+docker compose logs -f api
+```
+
+Para detener los servicios:
+
+```bash
+docker compose down
+```
+
+### 3. Ejecutar la app Android
+
+Abre la carpeta [`app/`](app/) en Android Studio, inicia un emulador y ejecuta la configuración `app`. También se puede compilar desde la terminal:
+
+```powershell
+Set-Location app
+.\gradlew.bat installDebug
+```
+
+La URL base del cliente Android se encuentra en [`app/src/main/java/com/uam/lugaresapp/data/ApiClient.kt`](app/src/main/java/com/uam/lugaresapp/data/ApiClient.kt):
+
+```kotlin
+const val BASE_URL = "http://10.0.2.2:5000/"
+```
+
+`10.0.2.2` permite que el emulador de Android llegue al `localhost` de la computadora anfitriona. En un teléfono físico se debe reemplazar por la IP local del equipo que ejecuta Docker, por ejemplo `http://192.168.1.50:5000/`.
+
+La app declara el permiso `INTERNET` y `android:usesCleartextTraffic="true"` para permitir las pruebas locales por HTTP. En un despliegue real se debe usar HTTPS.
+
+## Evidencia visual · cliente Kotlin
+
+Las capturas se almacenan en [`docs/capturas/kotlin/`](docs/capturas/kotlin/). Corresponden a la versión Android desarrollada en Kotlin con Jetpack Compose.
+
+| Directorio con registro | Alta de espacio |
+| --- | --- |
+| ![Directorio de espacios con cafetería](docs/capturas/kotlin/01-directorio-con-lugar.jpg) | ![Formulario para agregar un espacio](docs/capturas/kotlin/02-formulario-nuevo-espacio.jpg) |
+| Lista vacía | Registro |
+| ![Estado de directorio vacío](docs/capturas/kotlin/03-directorio-vacio.jpg) | ![Pantalla de registro](docs/capturas/kotlin/04-registro.jpg) |
+| Inicio de sesión | Búsqueda y filtrado |
+| ![Pantalla de inicio de sesión](docs/capturas/kotlin/05-inicio-sesion.jpg) | ![Búsqueda de cafetería](docs/capturas/kotlin/06-busqueda.jpg) |
+
+### Evidencia pendiente
+
+Para cubrir por completo la lista de entrega de la práctica, aún se deben agregar capturas de edición, eliminación, credenciales incorrectas y un intento de CRUD sin sesión o con token vencido. Las capturas anteriores son las disponibles al momento de esta versión del README.
+
+## Seguridad y datos
+
+- Las contraseñas no se guardan en texto plano: se procesan con `bcryptjs` y un costo de hash de 10.
+- La API firma los JWT con `JWT_SECRET` y usa `JWT_EXPIRES_IN` para su caducidad.
+- El interceptor de Retrofit adjunta el token a cada petición protegida mediante `Authorization: Bearer <token>`.
+- El token se conserva localmente en `SharedPreferences` y se borra si el usuario cierra sesión o recibe un `401`.
+- Las credenciales de Docker y la llave JWT se leen desde `.env`; el archivo versionado es únicamente [`.env.example`](.env.example).
+
+## Trabajo en equipo
+
+El repositorio usa issues para identificar pantallas y endpoints. Los cambios se desarrollan en ramas y se integran a `main` mediante Pull Request ligado al issue correspondiente y revisado por otra persona integrante del equipo.
+
+## Conclusiones
+
+Esta práctica permitió integrar en un solo flujo la persistencia en PostgreSQL, el levantamiento reproducible con Docker Compose, la autenticación con JWT y un cliente Android conectado a una API propia. Los retos principales fueron configurar la comunicación entre el emulador y la API local —resuelto con `10.0.2.2`— y asegurar que las acciones del CRUD dependieran de una sesión válida. La separación entre cliente, API y base de datos facilita probar cada capa y proporciona una base para el proyecto integrador.
+
+## Uso de inteligencia artificial
+
+Se utilizó Claude (Anthropic) para elaborar borradores de documentos del repositorio. Se utilizó Codex (OpenAI) para apoyo en el rediseño visual de la app Android y en la redacción inicial de este README. El equipo revisó, adaptó y validó el código y la documentación resultantes.
+
+## Referencias
+
+Fielding, R. T. (2000). *Architectural styles and the design of network-based software architectures* [Tesis doctoral, University of California, Irvine]. https://ics.uci.edu/~fielding/pubs/dissertation/top.htm
+
+Hurtado Avilés, G. (2026). *Práctica 1: App móvil con API REST, usuarios y Docker* [Guía de práctica]. Universidad Autónoma Metropolitana, Unidad Azcapotzalco.
+
+Jones, M., Bradley, J., & Sakimura, N. (2015). *JSON Web Token (JWT)* (RFC 7519). Internet Engineering Task Force. https://doi.org/10.17487/RFC7519
+
+OWASP Foundation. (s. f.). *Password storage cheat sheet*. OWASP Cheat Sheet Series. https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+
+Docker. (s. f.). *Docker Compose documentation*. https://docs.docker.com/compose/
+
+Google. (s. f.). *Android Developers*. https://developer.android.com/

@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Original, simplified Oncahui insignia: black-panther face on campus orange. -->
+    <path android:fillColor="#FFFF9A1F" android:pathData="M54,0A54,54 0,1 0,54 108A54,54 0,1 0,54 0" />
+    <path android:fillColor="#FF17120F" android:pathData="M25,36L27,15L44,29C50,26 58,26 64,29L81,15L83,36C89,45 90,61 84,76C79,88 68,94 54,94C40,94 29,88 24,76C18,61 19,45 25,36Z" />
+    <path android:fillColor="#FF352820" android:pathData="M30,33L30,24L40,32ZM78,33L78,24L68,32Z" />
+    <path android:fillColor="#FFFFC55C" android:pathData="M33,49C37,44 44,44 47,49C44,56 36,56 33,49ZM61,49C64,44 71,44 75,49C72,56 64,56 61,49Z" />
+    <path android:fillColor="#FF17120F" android:pathData="M39,48A3,3 0,1 0,39 54A3,3 0,1 0,39 48ZM69,48A3,3 0,1 0,69 54A3,3 0,1 0,69 48Z" />
+    <path android:fillColor="#FFF5D9C2" android:pathData="M39,65C43,59 49,60 54,64C59,60 65,59 69,65C69,75 63,81 54,81C45,81 39,75 39,65Z" />
+    <path android:fillColor="#FF17120F" android:pathData="M48,64L60,64L54,70Z" />
+    <path android:fillColor="#FFE85D04" android:pathData="M51,74L57,74L54,78Z" />
+    <path android:fillColor="#FFFF9A1F" android:pathData="M31,61L42,64L41,67L30,65ZM77,61L66,64L67,67L78,65ZM32,72L44,71L44,74L32,76ZM76,72L64,71L64,74L76,76Z" />
+</vector>
