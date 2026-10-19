@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
     // Celular: IP local de la computadora (ipconfig). Emulador: http://10.0.2.2:5000/
-    const val BASE_URL = "http://localhost:5000/"
+    const val BASE_URL = "http://10.0.2.2:5000/"
 
     private val http = OkHttpClient.Builder()
         .addInterceptor { chain ->
