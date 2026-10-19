@@ -231,10 +231,12 @@ Las capturas se almacenan en [`docs/capturas/kotlin/`](docs/capturas/kotlin/). C
 | ![Estado de directorio vacío](docs/capturas/kotlin/03-directorio-vacio.jpg) | ![Pantalla de registro](docs/capturas/kotlin/04-registro.jpg) |
 | Inicio de sesión | Búsqueda y filtrado |
 | ![Pantalla de inicio de sesión](docs/capturas/kotlin/05-inicio-sesion.jpg) | ![Búsqueda de cafetería](docs/capturas/kotlin/06-busqueda.jpg) |
+| Credenciales incorrectas | Validación de contraseña |
+| ![Error de credenciales incorrectas](docs/capturas/kotlin/07-credenciales-incorrectas.png) | ![Error de contraseña con menos de ocho caracteres](docs/capturas/kotlin/09-registro-password-invalida.png) |
 
-### Evidencia pendiente
+**Confirmación para cerrar sesión**
 
-Para cubrir por completo la lista de entrega de la práctica, aún se deben agregar capturas de edición, eliminación, credenciales incorrectas y un intento de CRUD sin sesión o con token vencido. Las capturas anteriores son las disponibles al momento de esta versión del README.
+<img src="docs/capturas/kotlin/08-cerrar-sesion.png" alt="Confirmación para cerrar sesión" width="360">
 
 ## Seguridad y datos
 
