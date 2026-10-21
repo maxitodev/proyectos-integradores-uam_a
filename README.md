@@ -270,12 +270,12 @@ El cliente de Kotlin (`app/`) y el de Flutter (`app_flutter/`, ejercicio 4) cons
 | --- | --- | --- |
 | Lenguaje | Kotlin | Dart |
 | Código compartido | Solo Android (app nativa) | Un mismo código para varias plataformas; aquí se probó solo en Android |
-| Tiempo de compilación, primera vez | 1 min 2 s | *(Bryan)* |
-| Tiempo de compilación, desde cero | 23 s | *(Bryan)* |
-| Tiempo de compilación, incremental | 20 s | *(Bryan)* |
-| Qué costó más | Conectar la app en el celular con la API que corre en Docker: hubo que crear el túnel USB con `adb reverse`, permitir tráfico HTTP sin cifrar y declarar el permiso de Internet en el manifiesto. | *(Bryan)* |
+| Tiempo de compilación, primera vez | 1 min 2 s | 1 min 21 s |
+| Tiempo de compilación, desde cero | 23 s | 15 s |
+| Tiempo de compilación, incremental | 20 s | 6 s |
+| Qué costó más | Conectar la app en el celular con la API que corre en Docker: hubo que crear el túnel USB con `adb reverse`, permitir tráfico HTTP sin cifrar y declarar el permiso de Internet en el manifiesto. | Configurar la conexión con la API: la dirección cambia según el dispositivo (`10.0.2.2` en el emulador, la IP local en un celular físico), por lo que se dejó configurable con `--dart-define=API_URL`, y hubo que permitir tráfico HTTP sin cifrar y declarar el permiso de Internet en el manifiesto. |
 
-Los tiempos de Kotlin se midieron con `.\gradlew.bat clean assembleDebug` (primera vez y desde cero) y `.\gradlew.bat assembleDebug` tras cambiar un texto (incremental), en una computadora con procesador Intel Core i5-11400H de 11.ª generación, 8 GB de RAM y Windows. Los tiempos de Flutter se midieron en otro equipo, por lo que no son directamente comparables.
+Los tiempos de Kotlin se midieron con `.\gradlew.bat clean assembleDebug` (primera vez y desde cero) y `.\gradlew.bat assembleDebug` tras cambiar un texto (incremental), en una computadora con procesador Intel Core i5-11400H de 11.ª generación, 8 GB de RAM y Windows. Los tiempos de Flutter se midieron en la misma computadora con `flutter build apk --debug` (primera vez, tras `flutter clean` y tras cambiar un texto), por lo que son comparables entre sí.
 
 ## Conclusiones
 
