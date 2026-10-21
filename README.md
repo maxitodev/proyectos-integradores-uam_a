@@ -210,7 +210,7 @@ Set-Location app
 .\gradlew.bat installDebug
 ```
 
-La URL base del cliente Android se encuentra en [`app/src/main/java/com/uam/lugaresapp/data/ApiClient.kt`](app/src/main/java/com/uam/lugaresapp/data/ApiClient.kt):
+La URL base del cliente Android se encuentra en [`app/app/src/main/java/com/uam/lugaresapp/data/ApiClient.kt`](app/app/src/main/java/com/uam/lugaresapp/data/ApiClient.kt):
 
 ```kotlin
 const val BASE_URL = "http://10.0.2.2:5000/"
@@ -238,6 +238,18 @@ Las capturas se almacenan en [`docs/capturas/kotlin/`](docs/capturas/kotlin/). C
 
 <img src="docs/capturas/kotlin/08-cerrar-sesion.png" alt="Confirmación para cerrar sesión" width="360">
 
+## Evidencia visual · cliente Flutter
+
+Las capturas se almacenan en [`app_flutter/capturas/`](app_flutter/capturas/). Corresponden al cliente en Flutter del ejercicio 4, que incluye inicio de sesión y lista de lugares.
+
+| Credenciales incorrectas | Lista de lugares |
+| --- | --- |
+| ![Error de correo o contraseña incorrectos en Flutter](app_flutter/capturas/01-login-incorrecto.jpg) | ![Lista de lugares en Flutter](app_flutter/capturas/02-lista.jpg) |
+| Lista vacía | Error de conexión |
+| ![Estado de lista vacía en Flutter](app_flutter/capturas/03-lista-vacia.jpg) | ![Error de conexión con botón Reintentar](app_flutter/capturas/04a-error-conexion.jpg) |
+| Conexión recuperada | Sesión caducada |
+| ![Lista de lugares tras reintentar la conexión](app_flutter/capturas/04b-error-conexion.jpg) | ![Regreso al inicio de sesión con aviso de sesión caducada](app_flutter/capturas/05-sesion-caducada.jpg) |
+
 ## Seguridad y datos
 
 - Las contraseñas no se guardan en texto plano: se procesan con `bcryptjs` y un costo de hash de 10.
@@ -250,6 +262,21 @@ Las capturas se almacenan en [`docs/capturas/kotlin/`](docs/capturas/kotlin/). C
 
 El repositorio usa issues para identificar pantallas y endpoints. Los cambios se desarrollan en ramas y se integran a `main` mediante Pull Request ligado al issue correspondiente y revisado por otra persona integrante del equipo.
 
+## Comparación: Kotlin y Flutter
+
+El cliente de Kotlin (`app/`) y el de Flutter (`app_flutter/`, ejercicio 4) consumen la misma API.
+
+| | Kotlin (Jetpack Compose) | Flutter |
+| --- | --- | --- |
+| Lenguaje | Kotlin | Dart |
+| Código compartido | Solo Android (app nativa) | Un mismo código para varias plataformas; aquí se probó solo en Android |
+| Tiempo de compilación, primera vez | 1 min 2 s | *(Bryan)* |
+| Tiempo de compilación, desde cero | 23 s | *(Bryan)* |
+| Tiempo de compilación, incremental | 20 s | *(Bryan)* |
+| Qué costó más | Conectar la app en el celular con la API que corre en Docker: hubo que crear el túnel USB con `adb reverse`, permitir tráfico HTTP sin cifrar y declarar el permiso de Internet en el manifiesto. | *(Bryan)* |
+
+Los tiempos de Kotlin se midieron con `.\gradlew.bat clean assembleDebug` (primera vez y desde cero) y `.\gradlew.bat assembleDebug` tras cambiar un texto (incremental), en una computadora con procesador Intel Core i5-11400H de 11.ª generación, 8 GB de RAM y Windows. Los tiempos de Flutter se midieron en otro equipo, por lo que no son directamente comparables.
+
 ## Conclusiones
 
 Esta práctica permitió integrar en un solo flujo la persistencia en PostgreSQL, el levantamiento reproducible con Docker Compose, la autenticación con JWT y un cliente Android conectado a una API propia. Los retos principales fueron configurar la comunicación entre el emulador y la API local —resuelto con `10.0.2.2`— y asegurar que las acciones del CRUD dependieran de una sesión válida. La separación entre cliente, API y base de datos facilita probar cada capa y proporciona una base para el proyecto integrador.
@@ -260,14 +287,18 @@ Se utilizó Claude (Anthropic) para elaborar borradores de documentos del reposi
 
 ## Referencias
 
+## Referencias
+
+Docker. (s. f.). *Docker Compose documentation*. https://docs.docker.com/compose/
+
 Fielding, R. T. (2000). *Architectural styles and the design of network-based software architectures* [Tesis doctoral, University of California, Irvine]. https://ics.uci.edu/~fielding/pubs/dissertation/top.htm
+
+Flutter. (s. f.). *Flutter documentation*. https://docs.flutter.dev/
+
+Google. (s. f.). *Android Developers*. https://developer.android.com/
 
 Hurtado Avilés, G. (2026). *Práctica 1: App móvil con API REST, usuarios y Docker* [Guía de práctica]. Universidad Autónoma Metropolitana, Unidad Azcapotzalco.
 
 Jones, M., Bradley, J., & Sakimura, N. (2015). *JSON Web Token (JWT)* (RFC 7519). Internet Engineering Task Force. https://doi.org/10.17487/RFC7519
 
 OWASP Foundation. (s. f.). *Password storage cheat sheet*. OWASP Cheat Sheet Series. https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
-
-Docker. (s. f.). *Docker Compose documentation*. https://docs.docker.com/compose/
-
-Google. (s. f.). *Android Developers*. https://developer.android.com/
