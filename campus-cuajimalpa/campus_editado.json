@@ -1097,6 +1097,11 @@
       "offsetX": 0.3443104922771454,
       "offsetZ": 0.19885743875056505,
       "rotation": 0
+    },
+    "agora_cuajimalpa": {
+      "offsetX": 37,
+      "offsetZ": 17.5,
+      "rotation": 0
     }
   }
 }
