@@ -316,7 +316,7 @@ Las capturas están en [`docs/practica-3/`](docs/practica-3/), tomadas desde el 
 
 ### Planes de fotos
 
-Los planes están en [`docs/plan-de-fotos/`](docs/plan-de-fotos/). Cada uno indica desde qué puntos se fotografía, cuántas fotos se tomarán por condición (ángulo, cámara, hora, clima y gente), cuándo, cómo se nombran los archivos y los riesgos con su respuesta. Las fotos no se suben al repositorio.
+Los planes están en [`docs/plan-de-fotos/`](docs/plan-de-fotos/). Cada uno indica desde qué puntos se fotografía, cuántas fotos se tomarán, cuándo, cómo se nombran los archivos y los riesgos con su respuesta. Las fotos no se suben al repositorio.
 
 | Parte | Plan |
 | --- | --- |
