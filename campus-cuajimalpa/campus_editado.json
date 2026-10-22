@@ -430,7 +430,23 @@
             -26.6
           ]
         ],
-        "approximate": true
+        "approximate": true,
+        "netHeight": 8,
+        "endNets": [
+          -1
+        ],
+        "bleachers": [
+          [
+            17.5,
+            -17.5,
+            4.5
+          ],
+          [
+            17.5,
+            -12,
+            4.5
+          ]
+        ]
       },
       {
         "id": "cancha_futbol_rapido",
@@ -455,7 +471,9 @@
             -26.8
           ]
         ],
-        "approximate": true
+        "approximate": true,
+        "boards": 2.2,
+        "netHeight": 8
       },
       {
         "id": "cancha_basquetbol",
@@ -550,7 +568,13 @@
           ]
         ],
         "color": "#cdc6b8",
-        "approximate": true
+        "approximate": true,
+        "assemblyPoints": [
+          [
+            -8.6,
+            -93
+          ]
+        ]
       },
       {
         "id": "franja_sur_futbol_rapido",
@@ -608,41 +632,23 @@
           ],
           [
             -5.6,
-            -111.5
+            -123
           ],
           [
             -7.8,
-            -111.5
+            -123
           ]
         ],
         "shrubs": [
           [
             -6.7,
-            -132,
+            -131.5,
             1,
             2.3
           ],
           [
             -6.7,
-            -127.4,
-            1,
-            2.3
-          ],
-          [
-            -6.7,
-            -122.75,
-            1,
-            2.3
-          ],
-          [
-            -6.7,
-            -118.1,
-            1,
-            2.3
-          ],
-          [
-            -6.7,
-            -113.5,
+            -126.5,
             1,
             2.3
           ]
@@ -737,6 +743,180 @@
           [
             6.3,
             -65.3
+          ]
+        ],
+        "approximate": true
+      }
+    ],
+    "canopies": [
+      {
+        "id": "carpa_andador_poniente",
+        "name": "Carpa del andador poniente, junto al camino de los coches y la cancha de fútbol rápido",
+        "width": 4.6,
+        "height": 3.4,
+        "bay": 5.75,
+        "points": [
+          [
+            -37.3,
+            -140.5
+          ],
+          [
+            -37.3,
+            -94.5
+          ]
+        ],
+        "approximate": true
+      },
+      {
+        "id": "carpa_andador_norte",
+        "name": "Carpa ancha del andador junto al estacionamiento",
+        "width": 10.8,
+        "height": 3.6,
+        "bay": 4.75,
+        "points": [
+          [
+            -34.2,
+            -150
+          ],
+          [
+            -34.2,
+            -140.5
+          ]
+        ],
+        "approximate": true
+      }
+    ],
+    "shelters": [
+      {
+        "id": "techumbre_sur_futbol",
+        "name": "Techumbre al sur de la cancha de fútbol, con muro (frontón) hacia la cancha",
+        "center": [
+          13.6,
+          -92.25
+        ],
+        "width": 10.8,
+        "length": 7.5,
+        "height": 4.2,
+        "wall": "n",
+        "approximate": true
+      },
+      {
+        "id": "techumbre_banca_camino",
+        "name": "Banca techada del camino de en medio, junto a la cancha de fútbol",
+        "center": [
+          -7.2,
+          -110
+        ],
+        "width": 2.4,
+        "length": 24,
+        "height": 2.6,
+        "bench": true,
+        "approximate": true
+      }
+    ],
+    "terrain": [
+      {
+        "id": "montecito_oriente",
+        "name": "Montecito al oriente de las canchas: muro de contención, andador arriba y escaleras desde la cancha de básquetbol",
+        "stations": [
+          [
+            -172,
+            30.5,
+            0.2,
+            65.4
+          ],
+          [
+            -160,
+            30.5,
+            2.2,
+            66.1
+          ],
+          [
+            -146,
+            30.8,
+            3.5,
+            67
+          ],
+          [
+            -130,
+            30.8,
+            4.8,
+            68
+          ],
+          [
+            -110,
+            30.8,
+            5.8,
+            69.4
+          ],
+          [
+            -97,
+            30.6,
+            6.2,
+            70.3
+          ],
+          [
+            -80,
+            29.6,
+            6.2,
+            71.4
+          ],
+          [
+            -62,
+            29.6,
+            5,
+            72.6
+          ],
+          [
+            -50,
+            33,
+            2.4,
+            72.6
+          ],
+          [
+            -42,
+            43.5,
+            0.3,
+            72.6
+          ]
+        ],
+        "wallSlope": 0.9,
+        "plateau": 12,
+        "rise": 0.45,
+        "path": {
+          "label": "Andador sobre el muro",
+          "width": 3,
+          "offset": 7
+        },
+        "stairs": [
+          [
+            28.4,
+            -151,
+            34.6,
+            -151,
+            2.4
+          ]
+        ],
+        "trees": [
+          [
+            50,
+            -155
+          ],
+          [
+            55,
+            -138
+          ],
+          [
+            60,
+            -115
+          ],
+          [
+            53,
+            -96
+          ],
+          [
+            58,
+            -76
           ]
         ],
         "approximate": true
