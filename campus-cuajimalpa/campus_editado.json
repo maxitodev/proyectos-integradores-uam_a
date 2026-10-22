@@ -538,7 +538,7 @@
       }
     ]
   },
-  "showCopyright": true,
+  "showCopyright": false,
   "copyrightStyle": {
     "version": 2,
     "color": "#F08200",
@@ -563,5 +563,17 @@
         "width": 228.32128000000003
       }
     ]
+  },
+  "elementEdits": {
+    "porteria_cuajimalpa": {
+      "offsetX": 28.25695969382479,
+      "offsetZ": -19.400786341479716,
+      "rotation": 0
+    },
+    "tree_916.1556895077229_290.80114256124943": {
+      "offsetX": 0.3443104922771454,
+      "offsetZ": 0.19885743875056505,
+      "rotation": 0
+    }
   }
 }
