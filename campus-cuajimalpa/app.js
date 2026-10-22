@@ -41,6 +41,8 @@ function textPanel(parent,name,text,width,height,x,y,z,vertical=false){
 }
 // Detalle interpretativo sobre la huella existente: las fotos no son un levantamiento.
 const CU_FRAME={x:863,z:423,angle:-Math.atan2(.553,.833)};
+let roadCorridors=[];
+function nearRoad(x,z){return roadCorridors.some(([ax,az,bx,bz,r])=>{const dx=bx-ax,dz=bz-az,t=Math.max(0,Math.min(1,((x-ax)*dx+(z-az)*dz)/(dx*dx+dz*dz||1)));return Math.hypot(x-ax-t*dx,z-az-t*dz)<r;});}
 function cuajimalpaEntrance(){
  const g=new THREE.Group();g.name='Porteria_Cuajimalpa_aproximada';
  const candidate=data.architecture?.entrance?.localPosition,anchor=Array.isArray(candidate)&&candidate.length===2&&candidate.every(n=>Number.isFinite(n)&&Math.abs(n)<250)?candidate:[-23,-173],p=new THREE.Vector3(anchor[0],0,anchor[1]).applyAxisAngle(new THREE.Vector3(0,1,0),CU_FRAME.angle);
@@ -76,6 +78,10 @@ function cuajimalpaAccessPath(){
  const candidate=data.architecture?.accessPath,points=structuredClone(Array.isArray(candidate)&&candidate.length>=2&&candidate.every(p=>Array.isArray(p)&&p.length===2&&p.every(n=>Number.isFinite(n)&&Math.abs(n)<250))?candidate:[[-23,-167],[-43,-155],[-43,-72],[-20,-55],[0,-44]]);
  const start=entrance.node.localToWorld(new THREE.Vector3(0,0,-6)).sub(route.position).applyAxisAngle(new THREE.Vector3(0,1,0),-CU_FRAME.angle);points[0]=[start.x,start.z];
  for(let i=1;i<points.length;i++){const [ax,az]=points[i-1],[bx,bz]=points[i],dx=bx-ax,dz=bz-az;const m=box(route,'Andador_peatonal_aproximado',(ax+bx)/2,.25,(az+bz)/2,3,.24,Math.hypot(dx,dz),'#c0b9a6');m.rotation.y=Math.atan2(dx,dz);}
+ // Caminos vehiculares trazados sobre imagen satelital (aproximados): architecture.roads = [{id,name,width,points:[[x,z],…]}] en el marco local.
+ const validPoint=p=>Array.isArray(p)&&p.length===2&&p.every(n=>Number.isFinite(n)&&Math.abs(n)<250);
+ for(const road of Array.isArray(data.architecture?.roads)?data.architecture.roads:[]){const pts=road?.points;if(!Array.isArray(pts)||pts.length<2||!pts.every(validPoint))continue;const width=Number.isFinite(road.width)&&road.width>=2&&road.width<=20?road.width:6;
+  for(let i=1;i<pts.length;i++){const [ax,az]=pts[i-1],[bx,bz]=pts[i],dx=bx-ax,dz=bz-az,len=Math.hypot(dx,dz);if(len<.1)continue;const m=box(route,'Camino_vehicular_aproximado',(ax+bx)/2,.21,(az+bz)/2,width,.2,len+width*.5,'#8f918b');m.rotation.y=Math.atan2(dx,dz);m.castShadow=false;const wa=new THREE.Vector3(ax,0,az).applyAxisAngle(new THREE.Vector3(0,1,0),CU_FRAME.angle).add(route.position),wb=new THREE.Vector3(bx,0,bz).applyAxisAngle(new THREE.Vector3(0,1,0),CU_FRAME.angle).add(route.position);roadCorridors.push([wa.x,wa.z,wb.x,wb.z,width/2+3]);}}
  const north=new THREE.Vector3(-23,0,-222).applyAxisAngle(new THREE.Vector3(0,1,0),CU_FRAME.angle);label('Vasco de Quiroga',X(CU_FRAME.x)+north.x,2,Z(CU_FRAME.z)+north.z,'place');
  const courts=new THREE.Vector3(0,0,-117).applyAxisAngle(new THREE.Vector3(0,1,0),CU_FRAME.angle);label('Sector de canchas',X(CU_FRAME.x)+courts.x,3,Z(CU_FRAME.z)+courts.z,'place');
 }
@@ -207,9 +213,10 @@ function generate(){
  for(const [i,r]of data.parking.entries())parkingArea(r,'parking_'+i,'Estacionamiento '+(i+1));for(const [i,p]of(data.extraParking||[]).entries())parkingArea(p.rect,p.id,'Estacionamiento nuevo '+(i+1));
  for(const b of data.buildings)building(b);
  cuajimalpaEntrance();
+ roadCorridors=[];
  cuajimalpaAccessPath();
  let seed=1729;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
- for(let n=0;n<120;n++){const px=895+p.xMin+rand()*(p.xMax-p.xMin),py=390+p.zMin+rand()*(p.zMax-p.zMin);if(inside(px,py,data.site)&&!excluded(px,py))tree(px,py,.6);}
+ for(let n=0;n<120;n++){const px=895+p.xMin+rand()*(p.xMax-p.xMin),py=390+p.zMin+rand()*(p.zMax-p.zMin);if(inside(px,py,data.site)&&!excluded(px,py)&&!nearRoad(X(px),Z(py)))tree(px,py,.6);}
  vegetation.visible=$('trees').checked;labelLayer.hidden=!$('names').checked;addCopyrightToModel();world.updateMatrixWorld(true);selectBuilding(selected);refreshEditor();
 }
 const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();let down;
