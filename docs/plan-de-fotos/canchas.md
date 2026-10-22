@@ -19,7 +19,7 @@ El círculo marca dónde se para quien toma la foto y la flecha, hacia dónde mi
 | 5 | `rapido-esquina-se` | Esquina de la cancha de fútbol rápido, en la explanada sur | La cancha de fútbol rápido en diagonal, con su portería sur |
 | 6 | `rapido-banda-poniente` | Bajo la carpa del andador, junto al camino de los coches, a media cancha de fútbol rápido | El muro blanco y la red de la cancha de fútbol rápido; con `izq` y `der`, la carpa a lo largo |
 | 7 | `basquet-lateral` | Orilla de la cancha de básquetbol del lado del estacionamiento | La cancha de lado, con los dos tableros, los postes rojos y el punto de reunión |
-| 8 | `calle-sede` | Banqueta de la calle frente a la sede, a la salida del camino de en medio | Las canchas desde el sur, con la techumbre y la jardinera larga a un lado |
+| 8 | `calle-sede` | Orilla sur de la explanada, junto a la guarnición de la calle frente a la sede (sin bajar al arroyo) | Las canchas desde el sur, con la techumbre y la jardinera larga a un lado |
 | 9 | `escaleras-muro` | Arriba del muro de contención, al final de las escaleras que suben desde la cancha de básquetbol | Las escaleras y, abajo, la cancha de fútbol con sus gradas; con `izq`, el andador sobre el muro |
 
 ## Condiciones
@@ -87,7 +87,8 @@ Sin acentos, eñes ni espacios. Cada sesión va en su carpeta, por ejemplo `s1_2
 | De noche las torres de luz están apagadas o la unidad está por cerrar | Se toma a partir de las 18:45 y antes de las 19:30, en pareja; si están apagadas se anota en el registro |
 | Vigilancia no permite fotografiar | Se muestra la credencial UAM y se explica que es para una práctica; si no se autoriza, se pide permiso por correo a la coordinación y se reprograma |
 | No hay segundo teléfono ese día | Se le pide a otro integrante; si nadie puede, se repite `frente` y `lejos` en la siguiente sesión con otro teléfono |
-| La lluvia moja el teléfono | Funda o bolsa transparente; el punto 6 queda bajo la carpa del andador y el 1 junto a ella |
+| La lluvia moja el teléfono | Funda o bolsa transparente; el punto 6 queda bajo la carpa del andador; en los demás se toma con paraguas o entre aguaceros |
+| Pasan coches por la calle frente a la sede (punto 8) | Se toma desde la orilla de la explanada, sin bajar a la calle; si llega un coche, se espera a que pase |
 | Las escaleras o el andador sobre el muro están mojados o cerrados | De noche y con lluvia el punto 9 se toma desde el pie de las escaleras, sin subir |
 | Se pierden las fotos | Se suben a la carpeta compartida el mismo día |
 | Las canchas, el camino o la calle reales no coinciden con el croquis | Se anota la diferencia con la foto que la muestra y se abre un issue para corregir el croquis |
