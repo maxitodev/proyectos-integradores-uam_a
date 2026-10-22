@@ -12,7 +12,7 @@ El círculo marca dónde se para quien toma la foto y la flecha, hacia dónde mi
 
 | Punto | Nombre en archivo | Dónde |
 | --- | --- | --- |
-| 1 | `porteria` | Arranque del camino de entrada, desde la banqueta de Av. Vasco de Quiroga, mirando hacia la portería |
+| 1 | `porteria` | En la portería, junto a la caseta, mirando hacia el camino de entrada y sus portones |
 | 2 | `torniquetes` | Lado interior de la portería, junto a los torniquetes |
 | 3 | `camino-poniente` | Camino vehicular poniente, junto al muro, donde empieza la cubierta del andador |
 | 4 | `camino-oriente` | Camino vehicular oriente, frente a las canchas |
@@ -68,7 +68,7 @@ Sin acentos, eñes ni espacios. Cada visita va en su carpeta: `visita1_2026-10-2
 
 | Riesgo | Respuesta |
 | --- | --- |
-| Vigilancia no permite fotografiar el acceso | Se muestra la credencial UAM y se explica que es para una práctica; si no se autoriza, los puntos 1 y 2 se toman desde la banqueta exterior |
+| Vigilancia no permite fotografiar el acceso | Se muestra la credencial UAM y se explica que es para una práctica; si no se autoriza, los puntos 1 y 2 se toman desde afuera, en la banqueta de Av. Vasco de Quiroga |
 | Aparece un rostro o una placa reconocible | Se repite la toma cuando pase; la foto con rostro se borra |
 | La unidad está cerrada o no se puede ir ese día | La visita se mueve al siguiente día hábil antes del 6 de noviembre |
 | Se pierden las fotos | Se suben a la carpeta compartida el mismo día |
