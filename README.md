@@ -171,6 +171,7 @@ curl -X DELETE http://localhost:5000/lugares/1 \
 - Docker Desktop con Docker Compose.
 - Android Studio con SDK y emulador Android, o un teléfono Android con depuración USB.
 - JDK 11 o posterior para la app Android.
+- Node.js, sólo para el visor del campus de la Práctica 3 (no para la API, que corre en Docker): ver [Ejecutar el visor del campus](#ejecutar-el-visor-del-campus).
 
 ### 1. Configurar variables de entorno
 
@@ -285,14 +286,20 @@ Esta práctica permitió integrar en un solo flujo la persistencia en PostgreSQL
 
 El equipo trabaja en la Unidad Cuajimalpa, en [`campus-cuajimalpa/`](campus-cuajimalpa/), carpeta copiada del repositorio de ejemplo del profesor (Hurtado Avilés, 2026). Cada integrante perfecciona una parte del croquis y planea cómo fotografiarla; cada parte tiene su issue, su rama `feature/<issue>-<parte>` y su Pull Request, revisado y aprobado por otro integrante. Todo se registra en el milestone «Práctica 3 · Mi parte del campus».
 
-Para abrir el visor y editor, con Node.js instalado:
+### Ejecutar el visor del campus
+
+**El visor y editor necesita el servidor de Node.js en marcha.** Con Node.js instalado (no hay que instalar paquetes: las bibliotecas están en `campus-cuajimalpa/vendor/`), desde la raíz del repositorio:
 
 ```bash
 cd campus-cuajimalpa
 node server.mjs
 ```
 
-La terminal muestra la dirección que hay que abrir en el navegador (`http://127.0.0.1:8769`). **Guardar cambios** actualiza `campus_editado.json`, `UAM_Cuajimalpa.glb` y `plano_2d.png`. Como el `.glb` y el `.png` son binarios, los Pull Requests se integran uno por uno: quien integra después actualiza su rama con `main`, vuelve a pulsar **Guardar cambios** y confirma el resultado.
+La terminal muestra `Visor UAM: http://127.0.0.1:8769`. Abre en el navegador <http://127.0.0.1:8769/Visor_UAM_autonomo.html> y deja la terminal abierta mientras trabajas; `Ctrl+C` detiene el servidor. En Windows, `Abrir_visor.cmd` arranca el servidor (en una ventana minimizada) y abre el navegador. Para usar otro puerto: `PORT=8770 node server.mjs` (en PowerShell, `$env:PORT=8770; node server.mjs`).
+
+Abrir el archivo HTML con doble clic, sin el servidor, no basta. En Chromium el navegador bloquea las texturas de `texturas/` (el modelo se ve con colores lisos), **Guardar cambios** sólo descarga `UAM_Cuajimalpa.glb`, `plano_2d.png` y `campus_editado.json` a la carpeta de Descargas en lugar de actualizarlos en el repositorio, y `index.html` abierto como archivo no carga.
+
+Con el servidor, **Guardar cambios** actualiza `campus_editado.json`, `UAM_Cuajimalpa.glb` y `plano_2d.png` en `campus-cuajimalpa/`. Como el `.glb` y el `.png` son binarios, los Pull Requests se integran uno por uno: quien integra después actualiza su rama con `main`, vuelve a pulsar **Guardar cambios** y confirma el resultado.
 
 ### Reparto
 
