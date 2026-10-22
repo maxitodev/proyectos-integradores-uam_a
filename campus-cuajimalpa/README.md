@@ -77,3 +77,5 @@ El checkpoint del 18 octubre 2026 combina tres bandas grandes con repeticiones d
 ## Gráficos del visor
 
 El visor suma cielo con degradado, niebla, sol más bajo con sombras de 4096 px y texturas CC0 de ambientCG (pasto, concreto, asfalto) proyectadas en coordenadas del mundo dentro del shader (`detail()` y `addDetail()` en app.js). No son `material.map`: el GLB y la app móvil conservan colores planos y el mismo peso (≈0.65 MB). Si las imágenes de `texturas/` no cargan (por ejemplo, el visor autónomo abierto como archivo), se ve el color liso. El cielo no entra al GLB ni al plano 2D.
+
+Segunda tanda de texturas: la proyección es triplanar (sirve en suelos y paredes). Muro de contención (Concrete035), estacionamiento (Asfalto033), plazas de ladrillo (Bricks060) y paneles de terracota del edificio (concreto suave). Todas CC0 de ambientCG; ver `texturas/LICENCIA.txt`.
