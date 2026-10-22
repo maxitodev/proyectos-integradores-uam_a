@@ -1,0 +1,154 @@
+[
+  {
+    "id": "esquina_NO",
+    "edificio": "TORRE_III",
+    "modelo": [
+      -40.4996,
+      -20.4373
+    ],
+    "imagen": [
+      625,
+      534
+    ],
+    "latLon": [
+      19.352140972811927,
+      -99.28308333333332
+    ],
+    "observacion": "Punto visual de cubierta; incertidumbre por relieve/paralaje. No es control GNSS.",
+    "residuoMetros": 1.1879,
+    "ambito": "Conjunto UAM"
+  },
+  {
+    "id": "esquina_NE",
+    "edificio": "TORRE_III",
+    "modelo": [
+      15.2189,
+      16.7879
+    ],
+    "imagen": [
+      808,
+      661
+    ],
+    "latLon": [
+      19.35177351068288,
+      -99.28252213333332
+    ],
+    "observacion": "Punto visual de cubierta; incertidumbre por relieve/paralaje. No es control GNSS.",
+    "residuoMetros": 4.1354,
+    "ambito": "Conjunto UAM"
+  },
+  {
+    "id": "esquina_SE",
+    "edificio": "TORRE_III",
+    "modelo": [
+      -25.3753,
+      81.687
+    ],
+    "imagen": [
+      658,
+      853
+    ],
+    "latLon": [
+      19.351217975813892,
+      -99.28298213333332
+    ],
+    "observacion": "Punto visual de cubierta; incertidumbre por relieve/paralaje. No es control GNSS.",
+    "residuoMetros": 3.7742,
+    "ambito": "Conjunto UAM"
+  },
+  {
+    "id": "esquina_SO",
+    "edificio": "TORRE_III",
+    "modelo": [
+      -86.9964,
+      45.6085
+    ],
+    "imagen": [
+      468,
+      735
+    ],
+    "latLon": [
+      19.351559398509504,
+      -99.28356479999998
+    ],
+    "observacion": "Punto visual de cubierta; incertidumbre por relieve/paralaje. No es control GNSS.",
+    "residuoMetros": 3.6565,
+    "ambito": "Conjunto UAM"
+  },
+  {
+    "id": "centro_AUX_N",
+    "edificio": "AUX_N",
+    "modelo": [
+      56,
+      -112
+    ],
+    "imagen": [
+      924.25,
+      253.75
+    ],
+    "latLon": [
+      19.352951845959513,
+      -99.28216563333334
+    ],
+    "observacion": "Punto visual de cubierta; incertidumbre por relieve/paralaje. No es control GNSS.",
+    "residuoMetros": 0.5696,
+    "ambito": "Conjunto UAM"
+  },
+  {
+    "id": "centro_AUX_S1",
+    "edificio": "AUX_S1",
+    "modelo": [
+      -102,
+      114
+    ],
+    "imagen": [
+      432.25,
+      955.25
+    ],
+    "latLon": [
+      19.350922123790074,
+      -99.28367443333332
+    ],
+    "observacion": "Punto visual de cubierta; incertidumbre por relieve/paralaje. No es control GNSS.",
+    "residuoMetros": 0.9401,
+    "ambito": "Entorno exterior, no instalación UAM"
+  },
+  {
+    "id": "centro_AUX_S2",
+    "edificio": "AUX_S2",
+    "modelo": [
+      -104,
+      134
+    ],
+    "imagen": [
+      428.25,
+      1017.75
+    ],
+    "latLon": [
+      19.3507412848805,
+      -99.28368669999999
+    ],
+    "observacion": "Punto visual de cubierta; incertidumbre por relieve/paralaje. No es control GNSS.",
+    "residuoMetros": 1.7282,
+    "ambito": "Entorno exterior, no instalación UAM"
+  },
+  {
+    "id": "centro_SERV_O",
+    "edificio": "SERV_O",
+    "modelo": [
+      -162,
+      0
+    ],
+    "imagen": [
+      244.5,
+      602.25
+    ],
+    "latLon": [
+      19.35194349818798,
+      -99.28425019999999
+    ],
+    "observacion": "Punto visual de cubierta; incertidumbre por relieve/paralaje. No es control GNSS.",
+    "residuoMetros": 1.3635,
+    "ambito": "Entorno exterior, no instalación UAM"
+  }
+]

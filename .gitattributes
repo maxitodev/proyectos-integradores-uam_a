@@ -1,0 +1,4 @@
+# Binarios del campus: que Git no intente convertirlos
+*.glb binary
+*.png binary
+*.jpg binary

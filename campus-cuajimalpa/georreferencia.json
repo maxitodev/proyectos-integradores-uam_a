@@ -1,0 +1,68 @@
+{
+  "descripcion": "Croquis inicial UAM Cuajimalpa. Ajuste afín por mínimos cuadrados con 8 puntos en 5 volúmenes observados contra Esri World Imagery. RMS interno 2.55 m; NO equivale a exactitud geodésica. Incertidumbre visual orientativa de 5–15 m (sin control GNSS). Los controles incluyen edificios exteriores vecinos, no todos son instalaciones UAM.",
+  "plano": "plano_2d.png",
+  "ancho": 1040,
+  "alto": 1000,
+  "superiorIzquierda": [
+    19.354211866,
+    -99.285187417
+  ],
+  "superiorDerecha": [
+    19.354180903,
+    -99.280199355
+  ],
+  "inferiorIzquierda": [
+    19.349709535,
+    -99.285202689
+  ],
+  "metrosPorUnidad": 1.004951106533184,
+  "calibracion": {
+    "puntos": "calibracion/puntos.json",
+    "rmsMetros": 2.5539,
+    "maximoMetros": 4.1354,
+    "numeroPuntos": 8,
+    "volumenes": 5,
+    "independiente": false,
+    "advertencia": "Parte de las huellas auxiliares se trazó sobre la misma imagen. Error interno del ajuste, no validación absoluta independiente.",
+    "fechaConsulta": "2026-10-18",
+    "proveedor": "Esri World Imagery",
+    "extent3857": {
+      "xmin": -11052355.643410165,
+      "ymin": 2196211.64176573,
+      "xmax": -11051843.573752517,
+      "ymax": 2196621.2974918485,
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      }
+    },
+    "urlImagen": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=-99.285%2C19.3503%2C-99.2804%2C19.3536&bboxSR=4326&imageSR=3857&size=1500%2C1200&format=jpg&f=json",
+    "imageWidth": 1500,
+    "imageHeight": 1200,
+    "matrizAfinEsteNorte": [
+      [
+        1.0074930206992603,
+        -0.0066286948816133345
+      ],
+      [
+        -0.0032080511701638196,
+        -1.0023944986030422
+      ],
+      [
+        -0.1073667457896542,
+        -0.5314482049724695
+      ]
+    ],
+    "referenciaMercator": [
+      -11052099.608581342,
+      2196416.4696287895
+    ],
+    "cosLatitud": 0.9435008867061722,
+    "encuadre": {
+      "xMin": -260,
+      "xMax": 260,
+      "zMin": -250,
+      "zMax": 250
+    }
+  }
+}

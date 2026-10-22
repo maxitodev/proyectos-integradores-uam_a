@@ -1,0 +1,61 @@
+# UAM Cuajimalpa · Croquis inicial de Práctica 3
+
+2 volúmenes aproximados; revisar huellas, nombres y niveles con el alumnado. No topográfico.
+Torre III es un conjunto integrado (ocho niveles según informe UAM). Auxiliar norte es de uso por confirmar. Los controles exteriores no son instalaciones del campus.
+
+## Fachadas · revisión 18 octubre
+
+El conjunto principal tiene un generador propio en `cuajimalpaFacades()` de app.js: terracota, gran celosía oscura con pliegues claros, atrio de vidrio, bandas de corredores, dos lucernarios y plaza/rampa esquemáticas. Los detalles se exportan como parte de Edificio_TORRE_III, sin dividirlo en edificios separados. «Acceso · celosía» y «Fachada de vidrio» acercan la cámara; «Campus completo» recupera el contexto del predio.
+
+Referencia: tres fotografías aportadas por Gabriel en la conversación (acceso con «Soy UAM», frente acristalado, entrada desde portería). Son una interpretación visual: dimensiones de fachadas, reparto interior, posición de rampa y orientación de cada frente deben confirmarse en campo. Las fotos no mejoran la precisión geográfica. Se conservan exactamente los polígonos originales, la georreferencia y el encuadre del PNG. Las alturas siguen suponiendo 3.3 m por nivel. `architecture` en los JSON documenta esta revisión; el detalle geométrico se regenera desde app.js.
+
+Segunda revisión, con foto frontal de la entrada y toma aérea: cubierta roja con dos estructuras longitudinales elevadas (función y dimensiones sin confirmar), ventanas laterales modulares, jardineras circulares y portería con torre, marquesina, tirantes, caseta y portones. No se copió el logotipo superpuesto a la foto aérea como elemento arquitectónico. El rótulo «UAM» de la portería es tipográfico simplificado.
+
+«Portería» acerca la cámara. Para ajustar su posición provisional: Activar modo edición → Mostrar elementos: Portería → Elemento: Portería · posición aproximada → arrastrar o cambiar X/Z/giro → Guardar cambios. Es un solo grupo independiente, ID estable `porteria_cuajimalpa`; sus cambios viajan en `elementEdits`, GLB y PNG. No cambia el conteo de edificios. Se puede deshacer. La foto frontal no fija su posición geográfica: el anclaje provisional `architecture.entrance.localPosition` está expresado en el marco local `CU_FRAME`. Confirmar posición y orientación con referencia cenital antes de usarla para navegación precisa.
+
+### Corrección del acceso con referencia cenital
+
+La portería anterior en [-20,82] era incorrecta y queda sustituida por [-23,-173], al extremo de Vasco de Quiroga, con las canchas entre la entrada y la sede. Se gira 180° para mirar hacia la calle. Referencias nuevas de Gabriel: captura de Maps y foto aérea del edificio con canchas, tomadas desde ángulos diferentes. Se contrastó el orden relativo de los elementos; el punto exacto de la portería sigue siendo aproximado. No se giró el campus ni se alteró la georreferencia.
+
+«Acceso y canchas» muestra la relación completa. Un andador esquemático recorre el lateral de las canchas hacia el edificio; su primer tramo sigue la portería si se mueve/gira y desaparece si se retira. No representa un itinerario medido. `architecture.accessOrder` y `accessPath` documentan el orden y el trazo aproximado. Las dos huellas de canchas previas se conservan; su detalle sigue pendiente. El plano 2D se vuelve a exportar con el nuevo acceso y conserva su encuadre.
+
+## Abrir
+Con Node.js instalado: Abrir_visor.cmd o node server.mjs. Abrir http://127.0.0.1:8769/Visor_UAM_autonomo.html.
+Las bibliotecas locales están en vendor/; no se requiere instalar paquetes.
+
+## Contrato de archivos
+- campus_editado.json: estado editable que se carga primero.
+- model-data.js: base alternativa; campus_base.json es su copia generada.
+- UAM_Cuajimalpa.glb: geometría 3D, sin marca ni herramientas.
+- plano_2d.png: transparente, 1040×1000, marca temporal copyright @gabrielhuav en esquina.
+- georreferencia.json: tres esquinas lat/lon, RMS y procedencia.
+- index.html/app.js: interfaz y generador. node build.mjs recompone el HTML autónomo; no exporta GLB/PNG.
+
+Guardar cambios exporta JSON, GLB y PNG. Hay edición de niveles/desplazamiento de edificios y herramientas para árboles/estacionamientos, con deshacer/rehacer.
+Sin servidor se descargan los archivos; recuperarlos con Abrir datos guardados.
+Los polígonos usan buildings[].polygons; rects conserva las envolventes. Suelo X/Z, altura Y; X=px-895, Z=py-390 (metersPerPixel=1).
+La vegetación es ilustrativa. Las alturas suponen 3.3 m por nivel; no resuelven sótanos ni topografía.
+
+## Calibración
+8 puntos en 5 volúmenes observados: RMS interno 2.55 m; máximo 4.14 m.
+No es exactitud absoluta: algunas huellas y controles proceden de la misma imagen. Sin GNSS; incertidumbre visual orientativa 5–15 m.
+Ver calibracion/puntos.json y FUENTES.md. node calibracion/recalcular.mjs comprueba el ajuste; --write actualiza georreferencia tras corregir puntos.
+Conservar tamaño, encuadre y orientación del PNG o recalibrar deliberadamente.
+
+## Mejorar y entregar
+Corregir fuentes/datos, ejecutar node build.mjs, recargar y Guardar cambios. El JSON guardado tiene prioridad: no perder las correcciones del alumnado al cambiar la base.
+Copiar esta carpeta completa al repositorio del equipo. campus/ sigue siendo Azcapotzalco y las apps aún copian solo esa ruta; aquí no se modificó su integración.
+Datos derivados de © OpenStreetMap contributors, ODbL 1.0 (conservar atribución y licencia). Código según licencia del repositorio; bibliotecas según vendor.
+
+
+## Copyright integrado y bandera
+
+La marca «copyright @gabrielhuav» ahora pertenece a la maqueta: tres franjas grandes semitransparentes sobre el campus, exportadas dentro del GLB como grupo `Marca_copyright_modelo`. Se mantiene también el rótulo de esquina. Esta revisión sustituye las notas anteriores que excluían la marca del GLB.
+
+En Capas, «Copyright en la maqueta» activa o quita todas las marcas. Pulsa Guardar cambios para actualizar JSON, GLB y PNG. La bandera persistente es `showCopyright`: `true` muestra la marca; `false` la retira, también de las imágenes y del GLB exportado. Si falta la propiedad en datos antiguos, se activa por defecto. Cambiar solo el JSON no modifica un GLB ya exportado: vuelve a abrir el visor y guarda. Deshacer/rehacer también conserva esta opción.
+
+Para Claude: las apps pueden usar el GLB con el grupo integrado o regenerarlo con la bandera desactivada. Ocultar el grupo en un visor GLB requiere controlar el nodo `Marca_copyright_modelo`; este trabajo no modifica las apps. Huellas, niveles y georreferencia conservados; encuadre/tamaño de PNG sin cambios.
+
+## Marca de agua repetida · cinco unidades
+
+El checkpoint del 18 octubre 2026 combina tres bandas grandes con repeticiones distribuidas por la maqueta, en el color oficial de esta unidad y con opacidad 0,84. Se conserva la casilla `showCopyright`; Guardar cambios actualiza GLB, PNG y JSON. Configuración en `copyrightStyle`; distribución en `copyright-layout.js`. Detalles, colores, pruebas e instrucciones para móvil en `../COPYRIGHT_CAMPUS.md`. No cambia la georreferencia, escala ni encuadre del plano.
