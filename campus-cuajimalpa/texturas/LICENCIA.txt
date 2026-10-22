@@ -3,3 +3,6 @@ Texturas de ambientCG (https://ambientcg.com), licencia CC0 1.0 (dominio públic
 - concreto.jpg <- Concrete034
 - asfalto.jpg  <- Asphalt031
 Reducidas a 512 px. Sólo afectan la vista del visor; el GLB y el plano 2D conservan colores planos.
+- ladrillo.jpg <- Bricks060
+- muro.jpg     <- Concrete035
+- asfalto2.jpg <- Asphalt033
