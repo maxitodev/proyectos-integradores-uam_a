@@ -17,3 +17,6 @@ local.properties
 # Archivos del sistema
 Thumbs.db
 .DS_Store
+
+# Captura temporal que genera el visor del campus al guardar
+campus-cuajimalpa/Vista_actual.png
