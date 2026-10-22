@@ -1,8 +1,8 @@
-# Plan de fotos · Canchas, camino de en medio y calle frente a la sede
+# Plan de fotos · Canchas, camino de en medio, escaleras del muro y calle frente a la sede
 
 Responsable: Max Uriel Sánchez Díaz · Unidad Cuajimalpa · Práctica 3 · Mi parte del campus · Issue [#38](https://github.com/maxitodev/proyectos-integradores-uam_a/issues/38)
 
-Las fotos sirven para confirmar en campo la cancha de fútbol, la de fútbol rápido, la de básquetbol, el camino de en medio y la calle frente a la sede, y más adelante para entrenar el reconocimiento del lugar con la cámara. Por ahora **sólo se planea**: todavía no se toman. **Las fotos no se suben al repositorio**; se guardan en la carpeta compartida del equipo.
+Las fotos sirven para confirmar en campo la cancha de fútbol, la de fútbol rápido, la de básquetbol, el camino de en medio, la carpa del andador, el muro con sus escaleras y la calle frente a la sede, y más adelante para entrenar el reconocimiento del lugar con la cámara. Por ahora **sólo se planea**: todavía no se toman. **Las fotos no se suben al repositorio**; se guardan en la carpeta compartida del equipo.
 
 ## Puntos de toma
 
@@ -17,9 +17,10 @@ El círculo marca dónde se para quien toma la foto y la flecha, hacia dónde mi
 | 3 | `futbol-esquina-ne` | Esquina de la cancha de fútbol junto a la cancha de básquetbol | La cancha de fútbol en diagonal, con la portería norte y la torre de luz |
 | 4 | `futbol-banda-oriente` | Franja junto al muro de contención, a media cancha | La cancha de fútbol de lado y, al fondo, el camino de en medio y la de fútbol rápido |
 | 5 | `rapido-esquina-se` | Esquina de la cancha de fútbol rápido, en la explanada sur | La cancha de fútbol rápido en diagonal, con su portería sur |
-| 6 | `rapido-banda-poniente` | Bajo la cubierta del andador, a media cancha de fútbol rápido | La cancha de fútbol rápido de lado y el camino de en medio detrás |
+| 6 | `rapido-banda-poniente` | Bajo la carpa del andador, junto al camino de los coches, a media cancha de fútbol rápido | El muro blanco y la red de la cancha de fútbol rápido; con `izq` y `der`, la carpa a lo largo |
 | 7 | `basquet-lateral` | Orilla de la cancha de básquetbol del lado del estacionamiento | La cancha de lado, con los dos tableros, los postes rojos y el punto de reunión |
-| 8 | `calle-sede` | Banqueta de la calle frente a la sede, a la salida del camino de en medio | Las canchas desde el sur, con la jardinera larga a un lado |
+| 8 | `calle-sede` | Banqueta de la calle frente a la sede, a la salida del camino de en medio | Las canchas desde el sur, con la techumbre y la jardinera larga a un lado |
+| 9 | `escaleras-muro` | Arriba del muro de contención, al final de las escaleras que suben desde la cancha de básquetbol | Las escaleras y, abajo, la cancha de fútbol con sus gradas; con `izq`, el andador sobre el muro |
 
 ## Condiciones
 
@@ -45,19 +46,19 @@ El enunciado pide variar ángulo, cámara, hora, clima y gente. Cada condición 
 | De lejos | `lejos` | Cinco pasos hacia atrás, para ver el contexto | A y B |
 | Desde abajo | `abajo` | De frente, con el teléfono a la altura de la rodilla, inclinado hacia arriba | A |
 
-Por punto y sesión: 7 fotos del teléfono A + 2 del teléfono B = **9 fotos**.
+Por punto y sesión: 7 fotos del teléfono A + 2 del teléfono B = **9 fotos**. Con 9 puntos, **81 fotos por sesión**.
 
 ## Cuántas y cuándo
 
 | Sesión | Fecha | Hora | Hora del día | Clima | Gente | Fotos |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | Lunes 26 de octubre de 2026 | 7:30 a 8:15 | Mañana | El que toque (se anota) | Sin gente | 8 puntos × 9 = 72 |
-| 2 | Lunes 26 de octubre de 2026 | 13:00 a 13:45 | Mediodía | El que toque | Con gente | 72 |
-| 3 | Miércoles 28 de octubre de 2026 | 16:30 a 17:15 | Tarde | El que toque | Con gente | 72 |
-| 4 | Miércoles 28 de octubre de 2026 | 18:45 a 19:30 | Noche (después de la puesta de sol, hacia las 18:05) | El que toque | Con poca o sin gente | 72 |
-| 5 | Primer día nublado entre el 26 de octubre y el 6 de noviembre de 2026 | Mañana o tarde | La que permita el horario de clases | Nublado | Indistinto | 72 |
-| 6 | Primer día con lluvia entre el 26 de octubre y el 13 de noviembre de 2026 | Durante la lluvia o justo después, con el piso mojado | La que toque | Lluvia | Sin gente (las canchas se vacían) | 72 |
-| | | | | | **Total** | **432** |
+| 1 | Lunes 26 de octubre de 2026 | 7:30 a 8:15 | Mañana | El que toque (se anota) | Sin gente | 9 puntos × 9 = 81 |
+| 2 | Lunes 26 de octubre de 2026 | 13:00 a 13:45 | Mediodía | El que toque | Con gente | 81 |
+| 3 | Miércoles 28 de octubre de 2026 | 16:30 a 17:15 | Tarde | El que toque | Con gente | 81 |
+| 4 | Miércoles 28 de octubre de 2026 | 18:45 a 19:30 | Noche (después de la puesta de sol, hacia las 18:05) | El que toque | Con poca o sin gente | 81 |
+| 5 | Primer día nublado entre el 26 de octubre y el 6 de noviembre de 2026 | Mañana o tarde | La que permita el horario de clases | Nublado | Indistinto | 81 |
+| 6 | Primer día con lluvia entre el 26 de octubre y el 13 de noviembre de 2026 | Durante la lluvia o justo después, con el piso mojado | La que toque | Lluvia | Sin gente (las canchas se vacían) | 81 |
+| | | | | | **Total** | **486** |
 
 En la sesión 4 se fotografían las canchas con las torres de luz encendidas, si lo están. Si ninguna de las sesiones 1 a 4 es soleada, la sesión 2 se repite en un día soleado antes del 6 de noviembre.
 
@@ -86,7 +87,8 @@ Sin acentos, eñes ni espacios. Cada sesión va en su carpeta, por ejemplo `s1_2
 | De noche las torres de luz están apagadas o la unidad está por cerrar | Se toma a partir de las 18:45 y antes de las 19:30, en pareja; si están apagadas se anota en el registro |
 | Vigilancia no permite fotografiar | Se muestra la credencial UAM y se explica que es para una práctica; si no se autoriza, se pide permiso por correo a la coordinación y se reprograma |
 | No hay segundo teléfono ese día | Se le pide a otro integrante; si nadie puede, se repite `frente` y `lejos` en la siguiente sesión con otro teléfono |
-| La lluvia moja el teléfono | Funda o bolsa transparente; los puntos 6 y 1 quedan cerca de la cubierta del andador |
+| La lluvia moja el teléfono | Funda o bolsa transparente; el punto 6 queda bajo la carpa del andador y el 1 junto a ella |
+| Las escaleras o el andador sobre el muro están mojados o cerrados | De noche y con lluvia el punto 9 se toma desde el pie de las escaleras, sin subir |
 | Se pierden las fotos | Se suben a la carpeta compartida el mismo día |
 | Las canchas, el camino o la calle reales no coinciden con el croquis | Se anota la diferencia con la foto que la muestra y se abre un issue para corregir el croquis |
 
