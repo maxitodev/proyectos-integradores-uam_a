@@ -80,10 +80,9 @@ El visor suma cielo con degradado, niebla, sol más bajo con sombras de 4096 px 
 
 Segunda tanda de texturas: la proyección es triplanar (sirve en suelos y paredes). Muro de contención (Concrete035), estacionamiento (Asfalto033), plazas de ladrillo (Bricks060) y paneles de terracota del edificio (concreto suave). Todas CC0 de ambientCG; ver `texturas/LICENCIA.txt`.
 
-## Realismo del visor (cielo físico, efectos, ray tracing, vegetación y vida)
+## Realismo del visor (cielo físico, efectos, vegetación y vida)
 
 Todo esto sólo cambia la vista: el GLB y el plano 2D no dependen de la hora ni de los efectos (el GLB sólo suma los árboles de varias capas, autos y personas; el bosque lejano, el cielo y los efectos no se exportan).
 - **Cielo físico y hora del día** (`efectos.js`, `efectos-solar.js`, `vendor/Sky.js`): sol calculado para Cuajimalpa el 22 de octubre; el control «Hora del día» (5:00–19:30) mueve sol, luces, niebla y exposición, y «Nublado» apaga el sol directo.
 - **Efectos** («Efectos (AO y brillo)», apagados por omisión): oclusión ambiental GTAO, brillo y suavizado SMAA (add-ons de three r160 en `vendor/`). Si la GPU no los soporta, el visor sigue con el render directo.
-- **Renderizar imagen (ray tracing)** (`render-rt.js` con `three-gpu-pathtracer` 0.0.20 y `three-mesh-bvh` 0.7.3, MIT, en `vendor/`): calcula con la GPU una imagen fotorrealista de la vista actual en un canvas aparte; se afina por muestras y se guarda como PNG. Necesita WebGL2 y es lento en GPU integrada.
 - **Vegetación y vida** (`vegetacion.js`): árboles de seis especies (fresno, jacaranda, pino, cedro, arbusto, palmera), bosque oscuro en las laderas, autos y personas colocados donde las fotos los muestran, y relieve en pasto, muro y asfalto con mapas de normales (`texturas/*_n.jpg`).
