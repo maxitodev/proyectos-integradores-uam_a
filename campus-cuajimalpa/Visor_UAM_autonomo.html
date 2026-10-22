@@ -101,11 +101,12 @@ function cuajimalpaEntrance(){
 function cuajimalpaAccessPath(){
  // Orden contrastado con la referencia: Vasco de Quiroga → acceso → canchas → sede.
  // Andador esquemático junto a las canchas; no es una ruta accesible certificada.
- const entrance=editables.get('porteria_cuajimalpa');if(!entrance)return;
+ // Si se quita la portería desaparece el andador, pero los caminos vehiculares (y la calle frente a la sede) siguen.
+ const entrance=editables.get('porteria_cuajimalpa');
  const route=new THREE.Group();route.name='Andador_acceso_lado_canchas';route.position.set(X(CU_FRAME.x),0,Z(CU_FRAME.z));route.rotation.y=CU_FRAME.angle;route.userData.approximate=true;world.add(route);
  const candidate=data.architecture?.accessPath,points=structuredClone(Array.isArray(candidate)&&candidate.length>=2&&candidate.every(p=>Array.isArray(p)&&p.length===2&&p.every(n=>Number.isFinite(n)&&Math.abs(n)<250))?candidate:[[-23,-167],[-43,-155],[-43,-72],[-20,-55],[0,-44]]);
- const start=entrance.node.localToWorld(new THREE.Vector3(0,0,-6)).sub(route.position).applyAxisAngle(new THREE.Vector3(0,1,0),-CU_FRAME.angle);points[0]=[start.x,start.z];
- for(let i=1;i<points.length;i++){const [ax,az]=points[i-1],[bx,bz]=points[i],dx=bx-ax,dz=bz-az;const m=box(route,'Andador_peatonal_aproximado',(ax+bx)/2,.25,(az+bz)/2,3,.24,Math.hypot(dx,dz),'#c0b9a6');m.rotation.y=Math.atan2(dx,dz);}
+ if(entrance){const start=entrance.node.localToWorld(new THREE.Vector3(0,0,-6)).sub(route.position).applyAxisAngle(new THREE.Vector3(0,1,0),-CU_FRAME.angle);points[0]=[start.x,start.z];
+ for(let i=1;i<points.length;i++){const [ax,az]=points[i-1],[bx,bz]=points[i],dx=bx-ax,dz=bz-az;const m=box(route,'Andador_peatonal_aproximado',(ax+bx)/2,.25,(az+bz)/2,3,.24,Math.hypot(dx,dz),'#c0b9a6');m.rotation.y=Math.atan2(dx,dz);}}
  // Caminos vehiculares trazados sobre imagen satelital (aproximados): architecture.roads = [{id,name,width,points:[[x,z],…]}] en el marco local.
  const validPoint=p=>Array.isArray(p)&&p.length===2&&p.every(n=>Number.isFinite(n)&&Math.abs(n)<250);
  for(const road of Array.isArray(data.architecture?.roads)?data.architecture.roads:[]){const pts=road?.points;if(!Array.isArray(pts)||pts.length<2||!pts.every(validPoint))continue;const width=Number.isFinite(road.width)&&road.width>=2&&road.width<=20?road.width:6;
@@ -252,7 +253,7 @@ function cuajimalpaCourts(){
  for(const t of list(arch.shelters)){if(!validId(t?.id)||!validPoint(t.center))continue;const w=num(t.width,1,40,0),l=num(t.length,1,60,0),h=num(t.height,2,8,3);if(!w||!l)continue;shelter(sector,'Techumbre_'+t.id.replace(/^techumbre_/,''),t.center[0],t.center[1],w,l,h,t.wall,t.bench===true);const a=toWorld(t.center[0],t.center[1]-l/2),b=toWorld(t.center[0],t.center[1]+l/2);roadCorridors.push([a.x,a.z,b.x,b.z,w/2+1]);}
  // Carpas de los andadores: membrana blanca sobre postes; debajo no caen árboles aleatorios.
  for(const k of list(arch.canopies)){const pts=k?.points;if(!validId(k?.id)||!Array.isArray(pts)||pts.length<2||!pts.every(validPoint))continue;const w=num(k.width,2,20,4.6),h=num(k.height,2.5,8,3.6),bay=num(k.bay,2,15,5.5);
-  for(let i=1;i<pts.length;i++){const [ax,az]=pts[i-1],[bx,bz]=pts[i];if(Math.hypot(bx-ax,bz-az)<1)continue;canopy(sector,'Carpa_'+k.id.replace(/^carpa_/,''),ax,az,bx,bz,w,h,bay);const wa=toWorld(ax,az),wb=toWorld(bx,bz);roadCorridors.push([wa.x,wa.z,wb.x,wb.z,w/2+1]);}}
+  for(let i=1;i<pts.length;i++){const [ax,az]=pts[i-1],[bx,bz]=pts[i];if(Math.hypot(bx-ax,bz-az)<1)continue;canopy(sector,'Carpa_'+k.id.replace(/^carpa_/,''),ax,az,bx,bz,w,h,bay);const wa=toWorld(ax,az),wb=toWorld(bx,bz);roadCorridors.push([wa.x,wa.z,wb.x,wb.z,w/2]);}}
  // Montecito al oriente: muro de contención, andador elevado con lámparas tipo hongo y escaleras desde la cancha de básquetbol.
  for(const t of list(arch.terrain)){const st=list(t?.stations).filter(s=>Array.isArray(s)&&s.length===4&&s.every(n=>Number.isFinite(n)&&Math.abs(n)<250)&&s[1]<s[3]&&s[2]>=0&&s[2]<=20).sort((a,b)=>a[0]-b[0]);if(!validId(t?.id)||st.length<2)continue;
   const hl=hill(sector,'Montecito_'+t.id.replace(/^montecito_/,''),st,num(t.wallSlope,.2,3,.9),num(t.plateau,1,30,10),num(t.rise,0,2,.4)),z0=st[0][0],z1=st[st.length-1][0];
@@ -263,7 +264,8 @@ function cuajimalpaCourts(){
    if(typeof path.label==='string'){const c=toWorld(off+st[0][1],(z0+z1)/2);label(path.label.slice(0,40),c.x,8,c.z,'place');}}
   // Escaleras [x0,z0,x1,z1,ancho]: de (x0,z0) a nivel de cancha hasta (x1,z1) sobre el montecito.
   for(const s of list(t.stairs))if(Array.isArray(s)&&s.length===5&&s.every(n=>Number.isFinite(n)&&Math.abs(n)<250)){const [xa,za,xb,zb,w]=s,h=hl.at(zb).y(xb),len=Math.hypot(xb-xa,zb-za),n=Math.max(2,Math.ceil(h/.18)),rot=Math.atan2(xb-xa,zb-za);if(h<.3||len<1)continue;
-   for(let k=0;k<n;k++){const f=(k+.5)/n,m=box(sector,'Escalon_montecito',xa+(xb-xa)*f,(k+1)*h/n/2,za+(zb-za)*f,Math.min(6,Math.max(1,w)),(k+1)*h/n,len/n+.02,'#c8c4b8');m.rotation.y=rot;}}
+   // Cada escalón queda por encima del muro en su borde alto, para que no se entierre donde el muro es más empinado.
+   for(let k=0;k<n;k++){const f=(k+.5)/n,e=(k+1)/n,top=Math.max((k+1)*h/n,hl.at(za+(zb-za)*e).y(xa+(xb-xa)*e)+.05)+(k===n-1?.04:0),m=box(sector,'Escalon_montecito',xa+(xb-xa)*f,top/2,za+(zb-za)*f,Math.min(6,Math.max(1,w)),top,len/n+.02,'#c8c4b8');m.rotation.y=rot;}}
   for(const p of list(t.trees))if(validPoint(p))tree(...toPx(...p),.7,false,hl.at(p[1]).y(p[0]));}
  // Jardineras: polígono con guarnición, arbustos, rótulo, árboles y luminarias opcionales.
  for(const p of list(arch.planters)){const pts=p?.points;if(!validId(p?.id)||!Array.isArray(pts)||pts.length<3||pts.length>64||!pts.every(validPoint))continue;
