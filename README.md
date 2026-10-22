@@ -298,7 +298,7 @@ La terminal muestra la dirección que hay que abrir en el navegador (`http://127
 
 | Integrante | Parte del campus | Issue | Pull Request |
 | --- | --- | --- | --- |
-| Bryan Tonatiuh Ochoa De La Cruz | Entrada (portería) y caminos de acceso | (Bryan) | (Bryan) |
+| Bryan Tonatiuh Ochoa De La Cruz | Entrada (portería) y caminos de acceso | [#35](https://github.com/maxitodev/proyectos-integradores-uam_a/issues/35) | [#36](https://github.com/maxitodev/proyectos-integradores-uam_a/pull/36) |
 | Daniela Nava Martínez | Ágora | (Daniela) | (Daniela) |
 | Max Uriel Sánchez Díaz | Canchas | (Max) | (Max) |
 
@@ -310,7 +310,7 @@ Las capturas están en [`docs/practica-3/`](docs/practica-3/), tomadas desde el 
 
 | Parte | Antes | Después |
 | --- | --- | --- |
-| Entrada y caminos | (Bryan) | (Bryan) |
+| Entrada y caminos | ![Entrada y caminos, antes](docs/practica-3/entrada-caminos_antes.png) | ![Entrada y caminos, después](docs/practica-3/entrada-caminos_despues.png) |
 | Ágora | (Daniela) | (Daniela) |
 | Canchas | (Max) | (Max) |
 
@@ -320,7 +320,7 @@ Los planes están en [`docs/plan-de-fotos/`](docs/plan-de-fotos/). Cada uno indi
 
 | Parte | Plan |
 | --- | --- |
-| Entrada y caminos | (Bryan) |
+| Entrada y caminos | [entrada-y-caminos.md](docs/plan-de-fotos/entrada-y-caminos.md) |
 | Ágora | (Daniela) |
 | Canchas | (Max) |
 
