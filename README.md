@@ -281,6 +281,59 @@ Los tiempos de Kotlin se midieron con `.\gradlew.bat clean assembleDebug` (prime
 
 Esta práctica permitió integrar en un solo flujo la persistencia en PostgreSQL, el levantamiento reproducible con Docker Compose, la autenticación con JWT y un cliente Android conectado a una API propia. Los retos principales fueron configurar la comunicación entre el emulador y la API local —resuelto con `10.0.2.2`— y asegurar que las acciones del CRUD dependieran de una sesión válida. La separación entre cliente, API y base de datos facilita probar cada capa y proporciona una base para el proyecto integrador.
 
+## Práctica 3 · Mi parte del campus
+
+El equipo trabaja en la Unidad Cuajimalpa, en [`campus-cuajimalpa/`](campus-cuajimalpa/), carpeta copiada del repositorio de ejemplo del profesor (Hurtado Avilés, 2026). Cada integrante perfecciona una parte del croquis y planea cómo fotografiarla; cada parte tiene su issue, su rama `feature/<issue>-<parte>` y su Pull Request, revisado y aprobado por otro integrante. Todo se registra en el milestone «Práctica 3 · Mi parte del campus».
+
+Para abrir el visor y editor, con Node.js instalado:
+
+```bash
+cd campus-cuajimalpa
+node server.mjs
+```
+
+La terminal muestra la dirección que hay que abrir en el navegador (`http://127.0.0.1:8769`). **Guardar cambios** actualiza `campus_editado.json`, `UAM_Cuajimalpa.glb` y `plano_2d.png`. Como el `.glb` y el `.png` son binarios, los Pull Requests se integran uno por uno: quien integra después actualiza su rama con `main`, vuelve a pulsar **Guardar cambios** y confirma el resultado.
+
+### Reparto
+
+| Integrante | Parte del campus | Issue | Pull Request |
+| --- | --- | --- | --- |
+| Bryan Tonatiuh Ochoa De La Cruz | Entrada (portería) y caminos de acceso | (Bryan) | (Bryan) |
+| Daniela Nava Martínez | Ágora | (Daniela) | (Daniela) |
+| Max Uriel Sánchez Díaz | Canchas | (Max) | (Max) |
+
+La preparación común (carpeta del campus, plantilla «Historia de usuario» y archivos de Git) se hizo en el issue [#31](https://github.com/maxitodev/proyectos-integradores-uam_a/issues/31) y el Pull Request [#32](https://github.com/maxitodev/proyectos-integradores-uam_a/pull/32).
+
+### Antes y después
+
+Las capturas están en [`docs/practica-3/`](docs/practica-3/), tomadas desde el mismo ángulo antes y después de los cambios.
+
+| Parte | Antes | Después |
+| --- | --- | --- |
+| Entrada y caminos | (Bryan) | (Bryan) |
+| Ágora | (Daniela) | (Daniela) |
+| Canchas | (Max) | (Max) |
+
+### Planes de fotos
+
+Los planes están en [`docs/plan-de-fotos/`](docs/plan-de-fotos/). Cada uno indica desde qué puntos se fotografía, cuántas fotos se tomarán por condición (ángulo, cámara, hora, clima y gente), cuándo, cómo se nombran los archivos y los riesgos con su respuesta. Las fotos no se suben al repositorio.
+
+| Parte | Plan |
+| --- | --- |
+| Entrada y caminos | (Bryan) |
+| Ágora | (Daniela) |
+| Canchas | (Max) |
+
+### Referencias de la Práctica 3
+
+Conventional Commits. (s. f.). *Conventional Commits 1.0.0*. https://www.conventionalcommits.org/es/v1.0.0/
+
+GitHub. (s. f.). *Linking a pull request to an issue*. GitHub Docs. https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue
+
+Hurtado Avilés, G. (2026). *navegacion-uam-equipo-00* [Software]. GitHub. https://github.com/gabrielhuav/navegacion-uam-equipo-00
+
+OpenStreetMap contributors. (s. f.). *OpenStreetMap*. https://www.openstreetmap.org/copyright
+
 ## Uso de inteligencia artificial
 
 Se utilizó Claude (Anthropic) para elaborar borradores de documentos del repositorio. Se utilizó Codex (OpenAI) para apoyo en el rediseño visual de la app Android y en la redacción inicial de este README. El equipo revisó, adaptó y validó el código y la documentación resultantes.
