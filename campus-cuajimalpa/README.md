@@ -79,3 +79,11 @@ El checkpoint del 18 octubre 2026 combina tres bandas grandes con repeticiones d
 El visor suma cielo con degradado, niebla, sol más bajo con sombras de 4096 px y texturas CC0 de ambientCG (pasto, concreto, asfalto) proyectadas en coordenadas del mundo dentro del shader (`detail()` y `addDetail()` en app.js). No son `material.map`: el GLB y la app móvil conservan colores planos y el mismo peso (≈0.65 MB). Si las imágenes de `texturas/` no cargan (por ejemplo, el visor autónomo abierto como archivo), se ve el color liso. El cielo no entra al GLB ni al plano 2D.
 
 Segunda tanda de texturas: la proyección es triplanar (sirve en suelos y paredes). Muro de contención (Concrete035), estacionamiento (Asfalto033), plazas de ladrillo (Bricks060) y paneles de terracota del edificio (concreto suave). Todas CC0 de ambientCG; ver `texturas/LICENCIA.txt`.
+
+## Realismo del visor (cielo físico, efectos, ray tracing, vegetación y vida)
+
+Todo esto sólo cambia la vista: el GLB y el plano 2D no dependen de la hora ni de los efectos (el GLB sólo suma los árboles de varias capas, autos y personas; el bosque lejano, el cielo y los efectos no se exportan).
+- **Cielo físico y hora del día** (`efectos.js`, `efectos-solar.js`, `vendor/Sky.js`): sol calculado para Cuajimalpa el 22 de octubre; el control «Hora del día» (5:00–19:30) mueve sol, luces, niebla y exposición, y «Nublado» apaga el sol directo.
+- **Efectos** («Efectos (AO y brillo)», apagados por omisión): oclusión ambiental GTAO, brillo y suavizado SMAA (add-ons de three r160 en `vendor/`). Si la GPU no los soporta, el visor sigue con el render directo.
+- **Renderizar imagen (ray tracing)** (`render-rt.js` con `three-gpu-pathtracer` 0.0.20 y `three-mesh-bvh` 0.7.3, MIT, en `vendor/`): calcula con la GPU una imagen fotorrealista de la vista actual en un canvas aparte; se afina por muestras y se guarda como PNG. Necesita WebGL2 y es lento en GPU integrada.
+- **Vegetación y vida** (`vegetacion.js`): árboles de seis especies (fresno, jacaranda, pino, cedro, arbusto, palmera), bosque oscuro en las laderas, autos y personas colocados donde las fotos los muestran, y relieve en pasto, muro y asfalto con mapas de normales (`texturas/*_n.jpg`).
