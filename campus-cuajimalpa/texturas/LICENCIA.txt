@@ -1,0 +1,5 @@
+Texturas de ambientCG (https://ambientcg.com), licencia CC0 1.0 (dominio público):
+- pasto.jpg    <- Grass004
+- concreto.jpg <- Concrete034
+- asfalto.jpg  <- Asphalt031
+Reducidas a 512 px. Sólo afectan la vista del visor; el GLB y el plano 2D conservan colores planos.

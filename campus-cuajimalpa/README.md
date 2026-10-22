@@ -73,3 +73,7 @@ Para Claude: las apps pueden usar el GLB con el grupo integrado o regenerarlo co
 ## Marca de agua repetida · cinco unidades
 
 El checkpoint del 18 octubre 2026 combina tres bandas grandes con repeticiones distribuidas por la maqueta, en el color oficial de esta unidad y con opacidad 0,84. Se conserva la casilla `showCopyright`; Guardar cambios actualiza GLB, PNG y JSON. Configuración en `copyrightStyle`; distribución en `copyright-layout.js`. Detalles, colores, pruebas e instrucciones para móvil en `../COPYRIGHT_CAMPUS.md`. No cambia la georreferencia, escala ni encuadre del plano.
+
+## Gráficos del visor
+
+El visor suma cielo con degradado, niebla, sol más bajo con sombras de 4096 px y texturas CC0 de ambientCG (pasto, concreto, asfalto) proyectadas en coordenadas del mundo dentro del shader (`detail()` y `addDetail()` en app.js). No son `material.map`: el GLB y la app móvil conservan colores planos y el mismo peso (≈0.65 MB). Si las imágenes de `texturas/` no cargan (por ejemplo, el visor autónomo abierto como archivo), se ve el color liso. El cielo no entra al GLB ni al plano 2D.
