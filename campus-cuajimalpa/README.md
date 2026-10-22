@@ -27,7 +27,7 @@ Los datos están en `architecture.sportsFields`, `walkways`, `planters`, `canopi
 
 Con fotos posteriores (desde el camino poniente, desde la sede y desde el lado del muro) se agregaron:
 - La carpa del andador junto al camino de los coches: una fila de columnas blancas al centro y membrana en «ala» con arcos entre columnas, más una carpa ancha junto al estacionamiento.
-- El montecito al oriente: muro de contención inclinado, meseta con el andador sobre el muro y sus lámparas tipo hongo, ladera con árboles y escaleras que suben desde la cancha de básquetbol. Es el único volumen con relieve del croquis; sus alturas (hasta 6.2 m) son estimaciones de las fotos. El tramo del camino oriente (#35) que pasa por ahí queda dentro del montecito y lo representa el andador de arriba.
+- El montecito al oriente: muro de contención inclinado, meseta con el andador sobre el muro y sus lámparas tipo hongo, ladera con árboles y escaleras que suben desde la cancha de básquetbol. Es el único volumen con relieve del croquis; el muro y la meseta llegan a 6.2 m y la ladera sube hasta unos 9 m en la orilla del predio (estimaciones de las fotos). Se sube por las escaleras o por la rampa natural del extremo sur. El tramo del camino oriente (#35) que pasa por ahí queda dentro del montecito y lo representa el andador de arriba; su arranque queda bajo la losa de la cancha de básquetbol, que en la imagen satelital y en las fotos ocupa ese lugar. Los datos de #35 no se modificaron.
 
 Líneas, porterías, redes, luminarias, árboles, carpas y alturas son interpretativos (fotos); confirmar en campo con `docs/plan-de-fotos/canchas.md`.
 
