@@ -4,7 +4,7 @@ import {GLTFExporter} from 'exporter';
 import {ORIGINAL} from 'model-data';
 import {copyrightPanelsForSite} from 'copyright-layout';
 import {createEfectos,formatoHora} from 'efectos';
-import {crearArbol,crearBosque,colocarVida,relieveParaDetalle,liberarInstancias} from 'vegetacion';
+import {crearArbol,colocarVida,relieveParaDetalle} from 'vegetacion';
 
 const UNIT=ORIGINAL.unit;
 const $=id=>document.getElementById(id);
@@ -340,9 +340,6 @@ function tree(px,py,size=1,palm=false,elevation=0){
 }
 function inside(px,py,poly){let v=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){let a=poly[i],b=poly[j];if((a[1]>py)!=(b[1]>py)&&px<(b[0]-a[0])*(py-a[1])/(b[1]-a[1])+a[0])v=!v;}return v;}
 function excluded(x,y){const rects=[...data.buildings.flatMap(b=>b.rects),...data.plazas.map(p=>p.rect),...data.parking,...data.paths];return rects.some(r=>x>r[0]-10&&x<r[2]+10&&y>r[1]-10&&y<r[3]+10);}
-// Bosque decorativo fuera de 'world' (no entra al GLB): se crea una vez por polígono de predio y se reutiliza al regenerar.
-let bosque=null,bosqueSitio='';
-function syncBosque(){const k=JSON.stringify(data.site);if(bosque&&bosqueSitio===k){bosque.visible=$('trees').checked;return;}if(bosque){scene.remove(bosque);liberarInstancias(bosque);bosque.traverse(o=>{if(o.name==='Bosque_suelo'){o.geometry.dispose();o.material.dispose();}});}bosque=crearBosque(scene,{sitio:data.site,semilla:2026});bosqueSitio=k;bosque.visible=$('trees').checked;}
 function generate(){
  if(world){scene.remove(world);world.traverse(o=>{if(o.geometry&&![cube,cylinder,crown].includes(o.geometry))o.geometry.dispose();if(o.userData.disposeCopyrightMaterial){o.material.map?.dispose();o.material.dispose();}if(o.userData.disposeMaterial){o.material.map?.dispose();o.material.dispose();}});}
  clearEditSelection();labelLayer.replaceChildren();labels=[];buildingGroups.clear();editables.clear();world=new THREE.Group();world.name='UAM_'+UNIT.name;world.userData={units:'meters',approximate:true,reference:data.reference,unit:UNIT.name,dataLicense:data.license};scene.add(world);
@@ -358,7 +355,7 @@ function generate(){
  cuajimalpaAccessPath();
  let seed=1729;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
  for(let n=0;n<120;n++){const px=895+p.xMin+rand()*(p.xMax-p.xMin),py=390+p.zMin+rand()*(p.zMax-p.zMin);if(inside(px,py,data.site)&&!excluded(px,py)&&!nearRoad(X(px),Z(py)))tree(px,py,.6);}
- vegetation.visible=$('trees').checked;syncBosque();labelLayer.hidden=!$('names').checked;addCopyrightToModel();world.updateMatrixWorld(true);selectBuilding(selected);refreshEditor();
+ vegetation.visible=$('trees').checked;labelLayer.hidden=!$('names').checked;addCopyrightToModel();world.updateMatrixWorld(true);selectBuilding(selected);refreshEditor();
 }
 const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();let down;
 renderer.domElement.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);
@@ -397,7 +394,7 @@ function view(mode){topMode=mode==='top';focusMode=['approved','glass','entrance
 for(const mode of ['approved','glass','entrance','access','maps','top'])$(mode).onclick=()=>view(mode);
 $('courts').onclick=()=>view('courts');
 $('spin').onclick=()=>{if(topMode)view('maps');controls.autoRotate=!controls.autoRotate;$('spin').classList.toggle('active',controls.autoRotate);};
-$('trees').onchange=()=>{vegetation.visible=$('trees').checked;if(bosque)bosque.visible=$('trees').checked;};$('names').onchange=()=>labelLayer.hidden=!$('names').checked;$('grid').onchange=()=>grid.visible=$('grid').checked;
+$('trees').onchange=()=>vegetation.visible=$('trees').checked;$('names').onchange=()=>labelLayer.hidden=!$('names').checked;$('grid').onchange=()=>grid.visible=$('grid').checked;
 // Ambiente (efectos.js): hora del día, nublado y efectos AO/brillo; sólo cambian la vista, no el GLB ni el plano 2D.
 {const hh=$('hora'),nn=$('nublado'),pp=$('efectosPost'),sync=()=>{$('horaTxt').textContent=formatoHora(Number(hh.value));$('nubladoTxt').textContent=Math.round(nn.value*100)+' %';};
  if(hh&&nn&&pp){hh.value=efectos.getHora();nn.value=efectos.getNublado();sync();
@@ -525,7 +522,7 @@ async function planoBlob(){
  const w=(PLANO.xMax-PLANO.xMin)*PLANO.pxPorMetro,h=(PLANO.zMax-PLANO.zMin)*PLANO.pxPorMetro;
  const r=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});r.setSize(w,h,false);r.setClearColor(0,0);
  const cam=new THREE.OrthographicCamera(PLANO.xMin,PLANO.xMax,-PLANO.zMin,-PLANO.zMax,1,2500);cam.position.set(0,1000,0);cam.up.set(0,0,-1);cam.lookAt(0,0,0);
- const ocultos=[...['Base maqueta','Eje_5_Norte_Montevideo','Av_San_Pablo'].map(n=>world.getObjectByName(n)),sky,editHelper,highlight,bosque,world.getObjectByName('Vida_decorativa')].filter(Boolean).map(node=>({node,visible:node.visible})),was=vegetation.visible,fog=scene.fog,g=grid.visible;
+ const ocultos=[...['Base maqueta','Eje_5_Norte_Montevideo','Av_San_Pablo'].map(n=>world.getObjectByName(n)),sky,editHelper,highlight,world.getObjectByName('Vida_decorativa')].filter(Boolean).map(node=>({node,visible:node.visible})),was=vegetation.visible,fog=scene.fog,g=grid.visible;
  for(const o of ocultos)o.node.visible=false;vegetation.visible=true;scene.fog=null;grid.visible=false;
  const salirPlano=efectos.modoPlano(); // luz original, sin cielo ni entorno: el plano no depende de la hora del visor
  try{r.outputColorSpace=renderer.outputColorSpace;r.toneMapping=renderer.toneMapping;r.toneMappingExposure=renderer.toneMappingExposure;r.render(scene,cam);salirPlano();return await watermarkedPlan(r.domElement);}
