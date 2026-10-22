@@ -240,15 +240,15 @@ Las capturas se almacenan en [`docs/capturas/kotlin/`](docs/capturas/kotlin/). C
 
 ## Evidencia visual · cliente Flutter
 
-Las capturas se almacenan en [`app_flutter/capturas/`](app_flutter/capturas/). Corresponden al cliente en Flutter del ejercicio 4, que incluye inicio de sesión y lista de lugares.
+Las capturas se almacenan en [`docs/capturas/flutter/`](docs/capturas/flutter/). Corresponden al cliente en Flutter del ejercicio 4, que incluye inicio de sesión y lista de lugares.
 
 | Credenciales incorrectas | Lista de lugares |
 | --- | --- |
-| ![Error de correo o contraseña incorrectos en Flutter](app_flutter/capturas/01-login-incorrecto.jpg) | ![Lista de lugares en Flutter](app_flutter/capturas/02-lista.jpg) |
+| ![Error de correo o contraseña incorrectos en Flutter](docs/capturas/flutter/01-login-incorrecto.jpg) | ![Lista de lugares en Flutter](docs/capturas/flutter/02-lista.jpg) |
 | Lista vacía | Error de conexión |
-| ![Estado de lista vacía en Flutter](app_flutter/capturas/03-lista-vacia.jpg) | ![Error de conexión con botón Reintentar](app_flutter/capturas/04a-error-conexion.jpg) |
+| ![Estado de lista vacía en Flutter](docs/capturas/flutter/03-lista-vacia.jpg) | ![Error de conexión con botón Reintentar](docs/capturas/flutter/04a-error-conexion.jpg) |
 | Conexión recuperada | Sesión caducada |
-| ![Lista de lugares tras reintentar la conexión](app_flutter/capturas/04b-error-conexion.jpg) | ![Regreso al inicio de sesión con aviso de sesión caducada](app_flutter/capturas/05-sesion-caducada.jpg) |
+| ![Lista de lugares tras reintentar la conexión](docs/capturas/flutter/04b-error-conexion.jpg) | ![Regreso al inicio de sesión con aviso de sesión caducada](docs/capturas/flutter/05-sesion-caducada.jpg) |
 
 ## Seguridad y datos
 
@@ -284,8 +284,6 @@ Esta práctica permitió integrar en un solo flujo la persistencia en PostgreSQL
 ## Uso de inteligencia artificial
 
 Se utilizó Claude (Anthropic) para elaborar borradores de documentos del repositorio. Se utilizó Codex (OpenAI) para apoyo en el rediseño visual de la app Android y en la redacción inicial de este README. El equipo revisó, adaptó y validó el código y la documentación resultantes.
-
-## Referencias
 
 ## Referencias
 
