@@ -382,8 +382,8 @@
   "note": "Huellas y niveles aproximados. Perímetro OSM orientativo, no catastral. Nombres auxiliares provisionales. Mejorar con fotografías y observación del alumnado. Los auxiliares sur/poniente son externos: no se incluyen como edificios UAM.",
   "license": "Geometría derivada de OpenStreetMap contributors, ODbL 1.0; ver FUENTES.md.",
   "architecture": {
-    "revision": "2026-10-18-acceso-vasco-de-quiroga",
-    "reference": "Cinco imágenes aportadas por Gabriel: tres fachadas y, en esta revisión, portería y vista aérea del conjunto. Corrección de acceso con captura Maps y vista aérea adicionales de Gabriel (ángulos distintos).",
+    "revision": "2026-10-22-porteria-y-caminos-satelital",
+    "reference": "Cinco imágenes aportadas por Gabriel: tres fachadas y, en esta revisión, portería y vista aérea del conjunto. Corrección de acceso con captura Maps y vista aérea adicionales de Gabriel (ángulos distintos). Portería, andador y caminos vehiculares corregidos por Bryan sobre imagen satelital del conjunto (ajuste por forma del perímetro, error visual de 5–10 m) y contrastados con Street View (2019) y fotos 360° públicas en Google Maps: el camino poniente corre junto al muro de contención y el andador va bajo la cubierta paralela, junto a las canchas.",
     "mainBuilding": "TORRE_III",
     "integratedComplex": true,
     "dimensions": "Detalles visuales aproximados; se conserva la huella OSM y 3.3 m por nivel.",
@@ -399,34 +399,42 @@
     ],
     "entrance": {
       "localPosition": [
-        -23,
-        -173
+        -37,
+        -152
       ],
       "positionApproximate": true,
       "editableId": "porteria_cuajimalpa",
-      "note": "Extremo de Vasco de Quiroga, al otro lado de las canchas respecto a la sede. Ubicación relativa corregida con captura Maps y foto aérea de Gabriel; punto exacto por afinar.",
+      "note": "Portería sobre el camino de acceso desde Av. Vasco de Quiroga (torre «Unidad Cuajimalpa» al oriente del camino, portones hasta el muro poniente), en el extremo norte del predio. Posición de imagen satelital, contrastada con Street View; por confirmar en campo.",
       "facing": "Vasco de Quiroga; giro de 180° respecto a la portería anterior."
     },
     "accessPath": [
       [
-        -23,
-        -167
+        -38,
+        -146
       ],
       [
-        -43,
-        -155
+        -38.5,
+        -128
       ],
       [
-        -43,
-        -72
+        -35.5,
+        -118
       ],
       [
-        -20,
-        -55
+        -35.5,
+        -62
       ],
       [
-        0,
-        -44
+        -36,
+        -48
+      ],
+      [
+        -25.9,
+        -38.3
+      ],
+      [
+        0.1,
+        -44.1
       ]
     ],
     "accessOrder": [
@@ -434,6 +442,104 @@
       "portería",
       "sector de canchas",
       "sede principal"
+    ],
+    "roads": [
+      {
+        "id": "camino_poniente",
+        "name": "Camino vehicular poniente: Vasco de Quiroga → portería → sede, junto al muro",
+        "width": 9,
+        "points": [
+          [
+            -42.1,
+            -188.8
+          ],
+          [
+            -41.9,
+            -177.8
+          ],
+          [
+            -41.6,
+            -157.8
+          ],
+          [
+            -43.1,
+            -145.6
+          ],
+          [
+            -43.1,
+            -136.5
+          ],
+          [
+            -41.1,
+            -117.6
+          ],
+          [
+            -42.4,
+            -86.3
+          ],
+          [
+            -43.4,
+            -55.3
+          ],
+          [
+            -40.6,
+            -26.8
+          ],
+          [
+            -47.3,
+            -3.7
+          ],
+          [
+            -47.4,
+            16.6
+          ],
+          [
+            -46.8,
+            36.4
+          ]
+        ],
+        "approximate": true
+      },
+      {
+        "id": "camino_oriente",
+        "name": "Camino vehicular oriente: acceso secundario desde Vasco de Quiroga y franja de estacionamiento junto a canchas",
+        "width": 6,
+        "points": [
+          [
+            21,
+            -212
+          ],
+          [
+            21.2,
+            -179.7
+          ],
+          [
+            31.5,
+            -162.8
+          ],
+          [
+            41.6,
+            -134.1
+          ],
+          [
+            46.3,
+            -96.8
+          ],
+          [
+            44,
+            -62.4
+          ],
+          [
+            44.1,
+            -32
+          ],
+          [
+            43,
+            -11
+          ]
+        ],
+        "approximate": true
+      }
     ]
   },
   "showCopyright": true,
