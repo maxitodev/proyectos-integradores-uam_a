@@ -502,13 +502,9 @@
       },
       {
         "id": "camino_oriente",
-        "name": "Camino vehicular oriente: acceso secundario desde Vasco de Quiroga y franja de estacionamiento junto a canchas",
+        "name": "Camino vehicular oriente: franja de estacionamiento junto a las canchas (sin salida directa a Vasco de Quiroga)",
         "width": 6,
         "points": [
-          [
-            21,
-            -212
-          ],
           [
             21.2,
             -179.7
