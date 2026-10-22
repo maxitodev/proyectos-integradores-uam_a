@@ -527,8 +527,8 @@
             -125.3
           ],
           [
-            -8,
-            -104
+            -10.6,
+            -103.5
           ]
         ],
         "lamps": [
@@ -661,7 +661,7 @@
         "label": "Calle frente a la sede",
         "points": [
           [
-            -37.3,
+            -34.2,
             -69.5
           ],
           [
@@ -673,7 +673,7 @@
             -62.9
           ],
           [
-            -31,
+            -29.8,
             -62.9
           ]
         ],
@@ -752,16 +752,16 @@
       {
         "id": "carpa_andador_poniente",
         "name": "Carpa del andador poniente, junto al camino de los coches y la cancha de fútbol rápido",
-        "width": 4.6,
+        "width": 3.8,
         "height": 3.4,
         "bay": 5.75,
         "points": [
           [
-            -37.3,
+            -36.4,
             -140.5
           ],
           [
-            -37.3,
+            -36.4,
             -94.5
           ]
         ],
