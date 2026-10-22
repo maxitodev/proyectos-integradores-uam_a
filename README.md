@@ -300,7 +300,7 @@ La terminal muestra la dirección que hay que abrir en el navegador (`http://127
 | --- | --- | --- | --- |
 | Bryan Tonatiuh Ochoa De La Cruz | Entrada (portería) y caminos de acceso | [#35](https://github.com/maxitodev/proyectos-integradores-uam_a/issues/35) | [#36](https://github.com/maxitodev/proyectos-integradores-uam_a/pull/36) |
 | Daniela Nava Martínez | Ágora | (Daniela) | (Daniela) |
-| Max Uriel Sánchez Díaz | Canchas | (Max) | (Max) |
+| Max Uriel Sánchez Díaz | Canchas, camino de en medio, carpas, montecito y calle frente a la sede | [#38](https://github.com/maxitodev/proyectos-integradores-uam_a/issues/38) | [#39](https://github.com/maxitodev/proyectos-integradores-uam_a/pull/39) |
 
 La preparación común (carpeta del campus, plantilla «Historia de usuario» y archivos de Git) se hizo en el issue [#31](https://github.com/maxitodev/proyectos-integradores-uam_a/issues/31) y el Pull Request [#32](https://github.com/maxitodev/proyectos-integradores-uam_a/pull/32).
 
@@ -312,7 +312,7 @@ Las capturas están en [`docs/practica-3/`](docs/practica-3/), tomadas desde el 
 | --- | --- | --- |
 | Entrada y caminos | ![Entrada y caminos, antes](docs/practica-3/entrada-caminos_antes.png) | ![Entrada y caminos, después](docs/practica-3/entrada-caminos_despues.png) |
 | Ágora | (Daniela) | (Daniela) |
-| Canchas | (Max) | (Max) |
+| Canchas | ![Canchas, antes](docs/practica-3/canchas_antes.png) | ![Canchas, después](docs/practica-3/canchas_despues.png) |
 
 ### Planes de fotos
 
@@ -322,7 +322,7 @@ Los planes están en [`docs/plan-de-fotos/`](docs/plan-de-fotos/). Cada uno indi
 | --- | --- |
 | Entrada y caminos | [entrada-y-caminos.md](docs/plan-de-fotos/entrada-y-caminos.md) |
 | Ágora | (Daniela) |
-| Canchas | (Max) |
+| Canchas | [canchas.md](docs/plan-de-fotos/canchas.md) |
 
 ### Referencias de la Práctica 3
 
@@ -336,7 +336,7 @@ OpenStreetMap contributors. (s. f.). *OpenStreetMap*. https://www.openstreetmap.
 
 ## Uso de inteligencia artificial
 
-Se utilizó Claude (Anthropic) para elaborar borradores de documentos del repositorio. Se utilizó Codex (OpenAI) para apoyo en el rediseño visual de la app Android y en la redacción inicial de este README. El equipo revisó, adaptó y validó el código y la documentación resultantes.
+Se utilizó Claude (Anthropic) para elaborar borradores de documentos del repositorio. Se utilizó Codex (OpenAI) para apoyo en el rediseño visual de la app Android y en la redacción inicial de este README. En la Práctica 3 (canchas), se utilizó Claude (Anthropic) para medir las canchas y caminos sobre la imagen satelital, programar su modelo en el visor del campus, generar el mapa de puntos del plan de fotos y redactar borradores del issue, del Pull Request y del plan. El equipo revisó, adaptó y validó el código y la documentación resultantes.
 
 ## Referencias
 

@@ -341,44 +341,7 @@
   "paths": [],
   "parking": [],
   "gates": [],
-  "courts": [
-    [
-      [
-        913.037,
-        299.492
-      ],
-      [
-        965.216,
-        313.02
-      ],
-      [
-        937.194,
-        357.791
-      ],
-      [
-        894.034,
-        335.244
-      ]
-    ],
-    [
-      [
-        907.24,
-        292.728
-      ],
-      [
-        925.921,
-        302.713
-      ],
-      [
-        903.696,
-        341.042
-      ],
-      [
-        883.083,
-        331.701
-      ]
-    ]
-  ],
+  "courts": [],
   "note": "Huellas y niveles aproximados. Perímetro OSM orientativo, no catastral. Nombres auxiliares provisionales. Mejorar con fotografías y observación del alumnado. Los auxiliares sur/poniente son externos: no se incluyen como edificios UAM.",
   "license": "Geometría derivada de OpenStreetMap contributors, ODbL 1.0; ver FUENTES.md.",
   "architecture": {
@@ -443,7 +406,567 @@
       "sector de canchas",
       "sede principal"
     ],
+    "courtsReference": "Canchas, camino de en medio, cancha de básquetbol y calle frente a la sede (Práctica 3, Max): trazo sobre Esri World Imagery rectificada al marco local (RMS 2.5 m), contrastado con dos fotos aéreas del conjunto; mediana de tres mediciones independientes (±0.5 m respecto a la imagen). Líneas, porterías, luminarias y árboles interpretativos; por confirmar en campo.",
+    "sportsFields": [
+      {
+        "id": "cancha_futbol_grande",
+        "name": "Cancha de fútbol",
+        "kind": "futbol",
+        "center": [
+          10.4,
+          -122.55
+        ],
+        "width": 31.4,
+        "length": 51.5,
+        "angle": 0,
+        "margin": 1.2,
+        "goal": [
+          6,
+          2
+        ],
+        "lights": [
+          [
+            -1.4,
+            -26.6
+          ]
+        ],
+        "approximate": true,
+        "netHeight": 8,
+        "endNets": [
+          -1
+        ],
+        "bleachers": [
+          [
+            17.5,
+            -17.5,
+            4.5
+          ],
+          [
+            17.5,
+            -12,
+            4.5
+          ]
+        ]
+      },
+      {
+        "id": "cancha_futbol_rapido",
+        "name": "Cancha de fútbol rápido",
+        "kind": "futbol_rapido",
+        "center": [
+          -23.2,
+          -110.35
+        ],
+        "width": 22.8,
+        "length": 49.9,
+        "angle": 0,
+        "cornerRadius": 4,
+        "margin": 0.5,
+        "goal": [
+          5,
+          2.1
+        ],
+        "lights": [
+          [
+            -0.8,
+            -26.8
+          ]
+        ],
+        "approximate": true,
+        "boards": 2.2,
+        "netHeight": 8
+      },
+      {
+        "id": "cancha_basquetbol",
+        "name": "Cancha de básquetbol",
+        "kind": "basquetbol",
+        "center": [
+          18.6,
+          -164.75
+        ],
+        "width": 16.4,
+        "length": 29.5,
+        "angle": 0,
+        "volleyball": true,
+        "assemblyPoint": true,
+        "lights": [
+          [
+            -9.2,
+            -14.3
+          ]
+        ],
+        "approximate": true
+      }
+    ],
+    "walkways": [
+      {
+        "id": "camino_en_medio",
+        "name": "Camino de en medio entre las canchas: estacionamiento → explanada sur",
+        "label": "Camino de en medio",
+        "width": 6.45,
+        "points": [
+          [
+            -8.58,
+            -152.8
+          ],
+          [
+            -8.58,
+            -96.8
+          ]
+        ],
+        "trees": [
+          [
+            -6.2,
+            -151.6
+          ],
+          [
+            -13.4,
+            -137
+          ],
+          [
+            -10.3,
+            -125.3
+          ],
+          [
+            -10.6,
+            -103.5
+          ]
+        ],
+        "lamps": [
+          [
+            -9.4,
+            -139
+          ],
+          [
+            -9.4,
+            -127.5
+          ],
+          [
+            -9.4,
+            -114.5
+          ]
+        ],
+        "approximate": true
+      },
+      {
+        "id": "explanada_sur_canchas",
+        "name": "Explanada al sur de las canchas: une el camino de en medio con la calle frente a la sede",
+        "width": 16.9,
+        "points": [
+          [
+            -11.8,
+            -88.35
+          ],
+          [
+            19,
+            -88.35
+          ]
+        ],
+        "lamps": [
+          [
+            -7.4,
+            -86
+          ]
+        ],
+        "color": "#cdc6b8",
+        "approximate": true,
+        "assemblyPoints": [
+          [
+            -8.6,
+            -93
+          ]
+        ]
+      },
+      {
+        "id": "franja_sur_futbol_rapido",
+        "name": "Franja pavimentada al sur de la cancha de fútbol rápido",
+        "width": 5.5,
+        "points": [
+          [
+            -34.6,
+            -82.65
+          ],
+          [
+            -11.8,
+            -82.65
+          ]
+        ],
+        "trees": [
+          [
+            -15.5,
+            -83.8
+          ]
+        ],
+        "color": "#cdc6b8",
+        "approximate": true
+      },
+      {
+        "id": "banqueta_frente_sede",
+        "name": "Banqueta frente a la sede, entre la calle y la fachada de vidrio",
+        "width": 10.3,
+        "points": [
+          [
+            -38,
+            -46.05
+          ],
+          [
+            18,
+            -46.05
+          ]
+        ],
+        "color": "#cdc6b8",
+        "approximate": true
+      }
+    ],
+    "planters": [
+      {
+        "id": "seto_camino_en_medio",
+        "name": "Seto junto a la cancha de fútbol, en el camino de en medio",
+        "points": [
+          [
+            -7.8,
+            -134
+          ],
+          [
+            -5.6,
+            -134
+          ],
+          [
+            -5.6,
+            -123
+          ],
+          [
+            -7.8,
+            -123
+          ]
+        ],
+        "shrubs": [
+          [
+            -6.7,
+            -131.5,
+            1,
+            2.3
+          ],
+          [
+            -6.7,
+            -126.5,
+            1,
+            2.3
+          ]
+        ],
+        "approximate": true
+      },
+      {
+        "id": "jardinera_larga",
+        "name": "Jardinera larga de la calle frente a la sede",
+        "label": "Calle frente a la sede",
+        "points": [
+          [
+            -34.2,
+            -69.5
+          ],
+          [
+            0.3,
+            -69.5
+          ],
+          [
+            0.3,
+            -62.9
+          ],
+          [
+            -29.8,
+            -62.9
+          ]
+        ],
+        "shrubs": [
+          [
+            -26,
+            -66.2,
+            4.5,
+            1.5
+          ],
+          [
+            -9.4,
+            -66.2,
+            3.8,
+            1.5
+          ]
+        ],
+        "sign": [
+          -16.4,
+          -66.2,
+          4
+        ],
+        "approximate": true
+      },
+      {
+        "id": "jardinera_remate",
+        "name": "Jardinera de remate con árbol, donde da vuelta la calle",
+        "points": [
+          [
+            3.8,
+            -69.6
+          ],
+          [
+            7.5,
+            -69.6
+          ],
+          [
+            9.75,
+            -69
+          ],
+          [
+            11.4,
+            -67.35
+          ],
+          [
+            12,
+            -65.1
+          ],
+          [
+            11.4,
+            -62.85
+          ],
+          [
+            9.75,
+            -61.2
+          ],
+          [
+            7.5,
+            -60.6
+          ],
+          [
+            3.8,
+            -60.6
+          ]
+        ],
+        "trees": [
+          [
+            6.3,
+            -65.3
+          ]
+        ],
+        "approximate": true
+      }
+    ],
+    "canopies": [
+      {
+        "id": "carpa_andador_poniente",
+        "name": "Carpa del andador poniente, junto al camino de los coches y la cancha de fútbol rápido",
+        "width": 3.8,
+        "height": 3.4,
+        "bay": 5.75,
+        "points": [
+          [
+            -36.4,
+            -140.5
+          ],
+          [
+            -36.4,
+            -94.5
+          ]
+        ],
+        "approximate": true
+      },
+      {
+        "id": "carpa_andador_norte",
+        "name": "Carpa ancha del andador junto al estacionamiento",
+        "width": 10.8,
+        "height": 3.6,
+        "bay": 4.75,
+        "points": [
+          [
+            -34.2,
+            -150
+          ],
+          [
+            -34.2,
+            -140.5
+          ]
+        ],
+        "approximate": true
+      }
+    ],
+    "shelters": [
+      {
+        "id": "techumbre_sur_futbol",
+        "name": "Techumbre al sur de la cancha de fútbol, con muro (frontón) hacia la cancha",
+        "center": [
+          13.6,
+          -92.25
+        ],
+        "width": 10.8,
+        "length": 7.5,
+        "height": 4.2,
+        "wall": "n",
+        "approximate": true
+      },
+      {
+        "id": "techumbre_banca_camino",
+        "name": "Banca techada del camino de en medio, junto a la cancha de fútbol",
+        "center": [
+          -7.2,
+          -110
+        ],
+        "width": 2.4,
+        "length": 24,
+        "height": 2.6,
+        "bench": true,
+        "approximate": true
+      }
+    ],
+    "terrain": [
+      {
+        "id": "montecito_oriente",
+        "name": "Montecito al oriente de las canchas: muro de contención, andador arriba y escaleras desde la cancha de básquetbol",
+        "stations": [
+          [
+            -172,
+            30.5,
+            0.2,
+            65.4
+          ],
+          [
+            -160,
+            30.5,
+            2.2,
+            66.1
+          ],
+          [
+            -146,
+            30.8,
+            3.5,
+            67
+          ],
+          [
+            -130,
+            30.8,
+            4.8,
+            68
+          ],
+          [
+            -110,
+            30.8,
+            5.8,
+            69.4
+          ],
+          [
+            -97,
+            30.6,
+            6.2,
+            70.3
+          ],
+          [
+            -80,
+            29.6,
+            6.2,
+            71.4
+          ],
+          [
+            -62,
+            29.6,
+            5,
+            72.6
+          ],
+          [
+            -50,
+            33,
+            2.4,
+            72.6
+          ],
+          [
+            -42,
+            43.5,
+            0.3,
+            72.6
+          ]
+        ],
+        "wallSlope": 0.9,
+        "plateau": 12,
+        "rise": 0.45,
+        "path": {
+          "label": "Andador sobre el muro",
+          "width": 3,
+          "offset": 7
+        },
+        "stairs": [
+          [
+            28.4,
+            -151,
+            34.6,
+            -151,
+            2.4
+          ]
+        ],
+        "trees": [
+          [
+            50,
+            -155
+          ],
+          [
+            55,
+            -138
+          ],
+          [
+            60,
+            -115
+          ],
+          [
+            53,
+            -96
+          ],
+          [
+            58,
+            -76
+          ]
+        ],
+        "approximate": true
+      }
+    ],
     "roads": [
+      {
+        "id": "calle_frente_sede",
+        "name": "Calle frente a la sede: retorno alrededor de las jardineras, entre la explanada de las canchas y la Torre III; se une al camino poniente",
+        "width": 10,
+        "points": [
+          [
+            -42,
+            -74.7
+          ],
+          [
+            8,
+            -74.7
+          ],
+          [
+            12.8,
+            -73.4
+          ],
+          [
+            16,
+            -70
+          ],
+          [
+            17,
+            -65.2
+          ],
+          [
+            16,
+            -60.4
+          ],
+          [
+            12.8,
+            -57.1
+          ],
+          [
+            8,
+            -56.3
+          ],
+          [
+            -42,
+            -56.3
+          ]
+        ],
+        "approximate": true
+      },
       {
         "id": "camino_poniente",
         "name": "Camino vehicular poniente: Vasco de Quiroga → portería → sede, junto al muro",

@@ -19,6 +19,20 @@ La portería anterior en [-20,82] era incorrecta y queda sustituida por [-23,-17
 
 «Acceso y canchas» muestra la relación completa. Un andador esquemático recorre el lateral de las canchas hacia el edificio; su primer tramo sigue la portería si se mueve/gira y desaparece si se retira. No representa un itinerario medido. `architecture.accessOrder` y `accessPath` documentan el orden y el trazo aproximado. Las dos huellas de canchas previas se conservan; su detalle sigue pendiente. El plano 2D se vuelve a exportar con el nuevo acceso y conserva su encuadre.
 
+### Canchas, camino de en medio y calle frente a la sede · revisión 22 octubre
+
+Esta revisión sustituye las dos huellas previas de canchas (`courts` queda vacío). La geometría se midió sobre Esri World Imagery rectificada al marco local `CU_FRAME` y se contrastó con dos fotos aéreas del conjunto tomadas desde la entrada; cada medida es la mediana de tres mediciones independientes y coincide con la imagen dentro de ±0.5 m (la georreferencia sigue en RMS 2.5 m). Cancha de fútbol de 31.4×51.5 m, de fútbol rápido de 22.8×49.9 m con esquinas redondeadas y de básquetbol en una losa de 16.4×29.5 m; camino de en medio de 6.5 m entre las dos de fútbol; explanada al sur de las canchas y calle frente a la sede, que rodea la jardinera larga y la jardinera de remate y se une al camino poniente.
+
+Los datos están en `architecture.sportsFields`, `walkways`, `planters`, `canopies`, `shelters` y `terrain` (marco local, metros); la calle es una entrada más de `architecture.roads`. `cuajimalpaCourts()` en app.js los dibuja: pasto sintético en franjas, líneas reglamentarias ajustadas al tamaño medido, porterías con red, torres de luz, tableros, postes de voleibol y el punto de reunión pintado en la de básquetbol; muro blanco de tableros con red alta alrededor de la de fútbol rápido; red alta detrás de la portería norte y gradas en la de fútbol; árboles, luminarias, seto, banca techada y otro punto de reunión en el camino de en medio; techumbre con frontón al sur de la cancha de fútbol.
+
+Con fotos posteriores (desde el camino poniente, desde la sede y desde el lado del muro) se agregaron:
+- La carpa del andador junto al camino de los coches: una fila de columnas blancas al centro y membrana en «ala» con arcos entre columnas, más una carpa ancha junto al estacionamiento.
+- El montecito al oriente: muro de contención inclinado, meseta con el andador sobre el muro y sus lámparas tipo hongo, ladera con árboles y escaleras que suben desde la cancha de básquetbol. Es el único volumen con relieve del croquis; el muro y la meseta llegan a 6.2 m y la ladera sube hasta unos 9 m en la orilla del predio (estimaciones de las fotos). Se sube por las escaleras o por la rampa natural del extremo sur. El tramo del camino oriente (#35) que pasa por ahí queda dentro del montecito y lo representa el andador de arriba; su arranque queda bajo la losa de la cancha de básquetbol, que en la imagen satelital y en las fotos ocupa ese lugar. Los datos de #35 no se modificaron.
+
+Líneas, porterías, redes, luminarias, árboles, carpas y alturas son interpretativos (fotos); confirmar en campo con `docs/plan-de-fotos/canchas.md`.
+
+«Canchas» acerca la cámara desde la entrada hacia la sede, como las fotos aéreas. En el modo edición, «Mostrar elementos: Canchas» lista las tres canchas (`cancha_futbol_grande`, `cancha_futbol_rapido`, `cancha_basquetbol`): se mueven, giran o quitan, sus cambios viajan en `elementEdits`/`removedElements` y se pueden deshacer. Los árboles aleatorios no caen sobre canchas, andadores ni la calle.
+
 ## Abrir
 Con Node.js instalado: Abrir_visor.cmd o node server.mjs. Abrir http://127.0.0.1:8769/Visor_UAM_autonomo.html.
 Las bibliotecas locales están en vendor/; no se requiere instalar paquetes.
