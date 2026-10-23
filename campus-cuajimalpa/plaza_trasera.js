@@ -228,7 +228,7 @@ function pieza(parent, nombre, geometria, material, x, y, z, {rot = 0, esc, somb
   o.castShadow = sombra; o.receiveShadow = true; parent.add(o); return o;
 }
 function persona(vida, x, y, z, giro, pose, semilla) { const p = crearPersona({semilla, pose}); p.position.set(x, y, z); p.rotation.y = giro; vida.add(p); }
-function arbol(parent, x, z, tipo, tamano, semilla, elevacion) { const a = crearArbol({tipo, tamano, semilla, elevacion}); a.name = 'Árbol_' + tipo; a.position.set(x, 0, z); parent.add(a); return a; }
+function arbol(parent, x, z, tipo, tamano, semilla, elevacion) { const a = crearArbol({tipo, tamano, semilla, elevacion}); a.name = 'Árbol_' + tipo; a.userData.arbol = true; a.position.set(x, 0, z); parent.add(a); return a; }
 
 // ───────────── 1) Plaza trasera ─────────────
 // Contorno medido en la ortofoto: remetimiento, franja frente al bloque poniente (sin pisar el foro x -31…-1, z ≥ 41.5) y frente al bloque +u.

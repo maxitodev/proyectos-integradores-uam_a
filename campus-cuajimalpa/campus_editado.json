@@ -345,20 +345,22 @@
   "note": "Huellas y niveles aproximados. Perímetro OSM orientativo, no catastral. Nombres auxiliares provisionales. Mejorar con fotografías y observación del alumnado. Los auxiliares sur/poniente son externos: no se incluyen como edificios UAM.",
   "license": "Geometría derivada de OpenStreetMap contributors, ODbL 1.0; ver FUENTES.md.",
   "architecture": {
-    "revision": "2026-10-22-porteria-y-caminos-satelital",
-    "reference": "Cinco imágenes aportadas por Gabriel: tres fachadas y, en esta revisión, portería y vista aérea del conjunto. Corrección de acceso con captura Maps y vista aérea adicionales de Gabriel (ángulos distintos). Portería, andador y caminos vehiculares corregidos por Bryan sobre imagen satelital del conjunto (ajuste por forma del perímetro, error visual de 5–10 m) y contrastados con Street View (2019) y fotos 360° públicas en Google Maps: el camino poniente corre junto al muro de contención y el andador va bajo la cubierta paralela, junto a las canchas.",
+    "revision": "2026-10-23-agora-y-parte-trasera",
+    "reference": "Cinco imágenes aportadas por Gabriel: tres fachadas y, en esta revisión, portería y vista aérea del conjunto. Corrección de acceso con captura Maps y vista aérea adicionales de Gabriel (ángulos distintos). Portería, andador y caminos vehiculares corregidos por Bryan sobre imagen satelital del conjunto (ajuste por forma del perímetro, error visual de 5–10 m) y contrastados con Street View (2019) y fotos 360° públicas en Google Maps: el camino poniente corre junto al muro de contención y el andador va bajo la cubierta paralela, junto a las canchas. Parte de atrás y costado (23 oct 2026, Daniela Nava Martínez, issue #37): cinco fotos de campo del equipo y Esri World Imagery z19; Ágora, plaza trasera, letras «soy uam», celosía en el remetimiento trasero, parasoles y torres de escaleras del costado, andador lateral y talud.",
     "mainBuilding": "TORRE_III",
     "integratedComplex": true,
     "dimensions": "Detalles visuales aproximados; se conserva la huella OSM y 3.3 m por nivel.",
     "orientation": "Asignación de fachadas interpretativa, por confirmar en campo.",
     "details": [
       "terracota",
-      "celosia",
+      "celosía en el remetimiento trasero (retícula de rombos y cadenas blancas)",
       "atrio acristalado",
       "ventanas laterales modulares",
       "cubierta roja y estructuras elevadas",
-      "plaza y rampa esquemáticas",
-      "portería con torre, marquesina, tirantes y portones"
+      "costado +u con ventanas verticales, vidrio y parasoles",
+      "torres de escaleras con balcones abiertos",
+      "portería con torre, marquesina, tirantes y portones",
+      "Ágora, plaza trasera y letras «soy uam»"
     ],
     "entrance": {
       "localPosition": [
@@ -961,7 +963,7 @@
       },
       {
         "id": "talud_costado",
-        "name": "Talud de pasto al oriente de la Torre III, del andador lateral a la orilla del predio, con árboles arriba (foto de campo 4, Esri z19; altura estimada 5–8 m)",
+        "name": "Talud de pasto al oriente de la Torre III, del andador lateral a la orilla del predio, con arboleda arriba (foto de campo 4, Esri z19; altura estimada 5–8 m)",
         "face": "pasto",
         "stations": [
           [
@@ -980,13 +982,13 @@
             -24,
             52.2,
             6.4,
-            74.4
+            73
           ],
           [
             -6,
             52,
             7.4,
-            75
+            73.3
           ],
           [
             12,
@@ -1011,6 +1013,12 @@
             51,
             1.6,
             71
+          ],
+          [
+            45,
+            50.8,
+            0,
+            70.4
           ]
         ],
         "wallSlope": 1.05,
@@ -1018,43 +1026,116 @@
         "rise": 0.15,
         "trees": [
           [
-            66,
+            64.5,
+            -40.8
+          ],
+          [
+            69.8,
+            -36.3
+          ],
+          [
+            64.7,
             -34
           ],
           [
-            71,
-            -26
+            69.8,
+            -31.3
           ],
           [
-            64,
-            -17
+            64.2,
+            -28.8
           ],
           [
-            69,
-            -8
+            69.9,
+            -24.8
           ],
           [
-            65,
-            1
-          ],
-          [
-            71,
-            9
-          ],
-          [
-            64,
-            17
+            63.9,
+            -22.2
           ],
           [
             70,
-            24
+            -19.1
           ],
           [
-            67,
-            31
+            64.9,
+            -15.1
+          ],
+          [
+            70.1,
+            -13.8
+          ],
+          [
+            63.5,
+            -10.4
+          ],
+          [
+            69.4,
+            -6.6
+          ],
+          [
+            64.7,
+            -3.9
+          ],
+          [
+            69.8,
+            -0.9
+          ],
+          [
+            63.5,
+            2.1
+          ],
+          [
+            69.1,
+            4.8
+          ],
+          [
+            63.4,
+            8.3
+          ],
+          [
+            70.3,
+            10.1
+          ],
+          [
+            64.3,
+            13
+          ],
+          [
+            69.4,
+            16.3
+          ],
+          [
+            64.8,
+            20.5
+          ],
+          [
+            70.2,
+            22.4
+          ],
+          [
+            64.6,
+            26.4
+          ],
+          [
+            69.6,
+            29.8
+          ],
+          [
+            64.4,
+            31.6
+          ],
+          [
+            69.9,
+            35
+          ],
+          [
+            63.7,
+            38.2
           ]
         ],
-        "approximate": true
+        "approximate": true,
+        "treeSize": 1.05
       }
     ],
     "roads": [
@@ -1196,7 +1277,7 @@
         -16,
         57
       ],
-      "fuente": "Membrana medida sobre Esri World Imagery z19 (centroide local (-15.7, 57.0), 647 m²) y fotos de campo del 23 oct 2026; diseño original de Daniela Nava Martínez (issue #37, PR #45). Aproximado."
+      "fuente": "Membrana medida sobre Esri World Imagery z19 (centroide local (-15.7, 57.0), 654 m², 647 unidades del plano) y fotos de campo del 23 oct 2026; diseño original de Daniela Nava Martínez (issue #37, PR #45). Aproximado."
     },
     "letrero": {
       "localPosition": [

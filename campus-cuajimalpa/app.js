@@ -6,7 +6,7 @@ import {copyrightPanelsForSite} from 'copyright-layout';
 import {createEfectos,formatoHora} from 'efectos';
 import {crearArbol,colocarVida,relieveParaDetalle} from 'vegetacion';
 import {construirAgora} from 'agora';
-import {Combinador} from 'geometria';
+import {Combinador,trazo} from 'geometria';
 import {construirPlazaTrasera,construirCostado,construirLetrero} from 'plaza-trasera';
 
 const UNIT=ORIGINAL.unit;
@@ -34,7 +34,7 @@ const matCache=new Map();
 const detailCache={},white=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1);white.needsUpdate=true;
 function detail(name){if(detailCache[name])return detailCache[name];const e=detailCache[name]={u:{tex:{value:white},avg:{value:new THREE.Vector3(1,1,1)},k:{value:0}}};
  new THREE.TextureLoader().load('./texturas/'+name+'.jpg',t=>{t.wrapS=t.wrapT=THREE.RepeatWrapping;t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;const c=document.createElement('canvas');c.width=c.height=8;const x=c.getContext('2d');x.drawImage(t.image,0,0,8,8);const d=x.getImageData(0,0,8,8).data;let r=0,g=0,b=0;for(let i=0;i<d.length;i+=4){r+=d[i];g+=d[i+1];b+=d[i+2];}const n=d.length/4*255;e.u.avg.value.set(...[r,g,b].map(v=>Math.pow(v/n,2.2)));e.u.tex.value=t;e.u.k.value=.8;},undefined,()=>{});return e;}
-const DETAIL={'#90aa81':['pasto',9],'#8f918b':['asfalto',7],'#c8c3b5':['concreto',6],'#cdc6b8':['concreto',6],'#c9c8bf':['concreto',6],'#c0b9a6':['concreto',6],'#d5cbb1':['concreto',6],'#3f8048':['pasto',3.5],'#6a9a46':['pasto',3.5],'#b47e63':['concreto',3],'#777f78':['asfalto2',6],'#a5a69b':['concreto',6],'#b87861':['ladrillo',2],'#d6d3c5':['concreto',5],'#d3cfc4':['concreto',3],'#45484a':['asfalto',7],'#7f5747':['concreto',3],'#a8695e':['concreto',3],'#8f8e86':['concreto',2.5],'#6b6e6e':['asfalto',7]};
+const DETAIL={'#90aa81':['pasto',9],'#7c9b55':['pasto',6],'#86a35e':['pasto',6],'#8f918b':['asfalto',7],'#c8c3b5':['concreto',6],'#cdc6b8':['concreto',6],'#c9c8bf':['concreto',6],'#c0b9a6':['concreto',6],'#d5cbb1':['concreto',6],'#3f8048':['pasto',3.5],'#6a9a46':['pasto',3.5],'#b47e63':['concreto',3],'#777f78':['asfalto2',6],'#a5a69b':['concreto',6],'#b87861':['ladrillo',2],'#d6d3c5':['concreto',5],'#d3cfc4':['concreto',3],'#45484a':['asfalto',7],'#7f5747':['concreto',3],'#a8695e':['concreto',3],'#8f8e86':['concreto',2.5],'#6b6e6e':['asfalto',7]};
 function addDetail(m,name,scale){const e=detail(name);m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,{dTex:e.u.tex,dAvg:e.u.avg,dK:e.u.k,dS:{value:scale}});
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vWp,vWn;').replace('#include <begin_vertex>','#include <begin_vertex>\nvWp=(modelMatrix*vec4(transformed,1.0)).xyz;vWn=normalize(mat3(modelMatrix)*objectNormal);');
  // Proyección triplanar: la misma textura sirve en suelos y en paredes, sin estirarse.
@@ -66,12 +66,13 @@ function materialCelosia(){
  // Rombos: dos familias de diagonales separadas a = 1.05 m que avanzan a por cada 1.9 m de alto (se repite sin costuras).
  x.lineCap='butt';x.strokeStyle='#1d2021';x.lineWidth=16;
  for(let i=-2;i<=3;i++)for(const sgn of [1,-1]){x.beginPath();x.moveTo(i*a,0);x.lineTo(i*a+sgn*a,H);x.stroke();}
- // Eslabón blanco: diagonal paralela a los rombos con remates cortos (arriba hacia la izquierda, abajo hacia la derecha).
- x.strokeStyle='#f2f1ea';x.lineWidth=25;
- for(const dy of [-H,0,H]){const x0=56,y0=dy+8,x1=x0+a*.9,y1=y0+H*.9;
-  x.beginPath();x.moveTo(x0,y0);x.lineTo(x1,y1);x.stroke();
-  x.beginPath();x.moveTo(x0-26,y0);x.lineTo(x0+8,y0);x.stroke();
-  x.beginPath();x.moveTo(x1-8,y1);x.lineTo(x1+26,y1);x.stroke();}
+ // Cadena blanca: eslabón largo «\» paralelo a los rombos con su hueco al centro y regreso corto «/»; cada barra rebasa la junta,
+ // así los extremos se cruzan en «X» como eslabones entrelazados y la columna sigue continua al repetirse en vertical.
+ const L=a*.66,hB=H*.64,barra=(p,q,w,e)=>{const d=Math.hypot(q[0]-p[0],q[1]-p[1]),ux=(q[0]-p[0])/d*e,uy=(q[1]-p[1])/d*e;x.lineWidth=w;x.beginPath();x.moveTo(p[0]-ux,p[1]-uy);x.lineTo(q[0]+ux,q[1]+uy);x.stroke();};
+ for(const dy of [-H,0,H]){const A=[40,dy+6],B=[40+L,dy+6+hB],C=[40,dy+6+H];
+  x.strokeStyle='#f2f1ea';barra(A,B,44,16);barra(B,C,30,16);
+  // Hueco del eslabón: transparente, deja ver el paño oscuro de atrás.
+  x.globalCompositeOperation='destination-out';x.lineCap='round';barra(A,B,13,-34);x.lineCap='butt';x.globalCompositeOperation='source-over';}
  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;
  return CELOSIA.material=new THREE.MeshStandardMaterial({map:t,alphaTest:.5,side:THREE.DoubleSide,roughness:.55});
 }
@@ -139,9 +140,12 @@ function cuajimalpaAgora(){
  label('Ágora de Cuajimalpa',g.position.x,15,g.position.z,'place');
 }
 function cuajimalpaPlazaTrasera(){
- const sector=new THREE.Group();sector.name='Plaza_trasera_y_costado';sector.position.set(X(CU_FRAME.x),0,Z(CU_FRAME.z));sector.rotation.y=CU_FRAME.angle;sector.userData={approximate:true};world.add(sector);
+ // La plaza y la franja del costado copian las caras de la huella: siguen el desplazamiento editable de la Torre III, como sus fachadas.
+ // Las letras y el Ágora son editables propios y conservan su ancla.
+ const b=data.buildings.find(b=>b.id==='TORRE_III'),dx=b?.offsetX||0,dz=b?.offsetZ||0;
+ const sector=new THREE.Group();sector.name='Plaza_trasera_y_costado';sector.position.set(X(CU_FRAME.x)+dx,0,Z(CU_FRAME.z)+dz);sector.rotation.y=CU_FRAME.angle;sector.userData={approximate:true};world.add(sector);
  construirPlazaTrasera(sector,CONTEXTO);construirCostado(sector,CONTEXTO);
- for(const [u,v,w,l] of [[-3,41,80,17],[44,0,17,92]]){const [x,z]=localAMundo(u,v);keepTreesOff(x,z,CU_FRAME.angle,w,l);}
+ for(const [u,v,w,l] of [[-3,41,80,17],[44,0,17,92]]){const [x,z]=localAMundo(u,v);keepTreesOff(x+dx,z+dz,CU_FRAME.angle,w,l);}
  const [u,v]=anclaLocal(data.architecture?.letrero?.localPosition,[2,37]),[x,z]=localAMundo(u,v);
  const g=new THREE.Group();g.name='Letrero_soy_uam';g.position.set(x,0,z);g.rotation.y=CU_FRAME.angle;g.userData={approximate:true};world.add(g);
  registerEditable('letrero_soy_uam','Letras «soy uam» · posición aproximada','landmark',g);
@@ -178,7 +182,8 @@ function cuajimalpaFacades(parent,height){
  }
  // Celosía en el remetimiento trasero, frente a la plaza del Ágora y las letras «soy uam» (fotos de campo 1 y 5, 23 oct 2026).
  // Antes estaba en la cara +u, donde las fotos muestran vidrio con parasoles y las torres de escaleras. Paño oscuro con pliegues claros.
- const screenBottom=Math.min(2.8,height*.15),screenHeight=Math.max(.8,height-screenBottom-1.6),cx=(-16.53+15.32)/2,span=31.35,zc=34.05;
+ // Baja hasta la plaza (foto 1: la retícula y las cadenas llegan al piso, con un marco delgado a ras); el grupo ya está a +0.25.
+ const screenBottom=.18,screenHeight=Math.max(.8,height-screenBottom-1.6),cx=(-16.53+15.32)/2,span=31.35,zc=34.05;
  box(g,'Celosia_fondo_oscuro',cx,screenBottom+screenHeight/2,zc,span,screenHeight,.18,'#3b474b');
  // Pliegues claros: textura de repetición (foto 1) sobre un plano; las UV van escaladas en la geometría (sin KHR_texture_transform).
  const pliegues=new THREE.Mesh(new THREE.PlaneGeometry(span,screenHeight),materialCelosia());const uv=pliegues.geometry.attributes.uv;
@@ -197,19 +202,20 @@ function cuajimalpaFacades(parent,height){
  ventanas.malla(g,'Ventana_vertical_costado',material('#2f3b3d'));vidrioU.malla(g,'Vidrio_costado_niveles_altos',material('#56747a'));parasoles.malla(g,'Parasoles_horizontales_costado',material('#b3b8b6'));
  // Torres de escaleras con balcones abiertos (foto 4): huecos oscuros, losas de balcón, barandal blanco y pilastras terracota;
  // remate inclinado tipo pérgola sobre la azotea. Van sobre las caras exteriores; la huella del edificio no cambia.
- for(const [nombre,x0,x1,z0,z1,cara] of [['E',30.37,42.2,-37.15,-24.08,-1],['S',34.99,42.11,24.38,36.9,1]]){
-  const huecos=new Combinador(),tramos=new Combinador(),losas=new Combinador(),barandal=new Combinador(),relleno=new Combinador(),pilastras=new Combinador(),remate=new Combinador(),zf=cara<0?z0:z1,lz=z1-z0,lx=x1-x0,zm=(z0+z1)/2,xm=(x0+x1)/2;
+ // Caras con balcón: las que dan a la franja entre las torres (foto 4, la torre E vista desde el sur) y, en S, también la de la plaza trasera.
+ for(const [nombre,x0,x1,z0,z1,caras] of [['E',30.37,42.2,-37.15,-24.08,[1]],['S',34.99,42.11,24.38,36.9,[-1,1]]]){
+  const huecos=new Combinador(),tramos=new Combinador(),losas=new Combinador(),barandal=new Combinador(),relleno=new Combinador(),pilastras=new Combinador(),remate=new Combinador(),lz=z1-z0,lx=x1-x0,zm=(z0+z1)/2,xm=(x0+x1)/2;
   for(let f=0;f<floors;f++){const y0=f*data.storeyHeight;
-   huecos.caja(x1+.06,y0+1.75,zm,.1,2.6,lz-1.6);huecos.caja(xm,y0+1.75,zf+cara*.06,lx-1.6,2.6,.1);
+   huecos.caja(x1+.06,y0+1.75,zm,.1,2.6,lz-1.6);
    // Tramo de escalera que se ve por el hueco (foto 4): losa inclinada de un descanso al siguiente.
    tramos.viga([x1+.2,y0+.35,z0+1.4],[x1+.2,y0+data.storeyHeight-.15,z1-1.4],1.1,.18);
-   if(f>0){losas.caja(x1+.55,y0+.1,zm,1.1,.2,lz);losas.caja(xm,y0+.1,zf+cara*.55,lx,.2,1.1);
-    barandal.caja(x1+1.08,y0+1.1,zm,.06,.06,lz);barandal.caja(xm,y0+1.1,zf+cara*1.08,lx,.06,.06);
-    relleno.caja(x1+1.08,y0+.62,zm,.03,.9,lz);relleno.caja(xm,y0+.62,zf+cara*1.08,lx,.9,.03);
-    for(let z=z0+.6;z<z1;z+=2.4)barandal.caja(x1+1.08,y0+.6,z,.05,1.05,.05);for(let x=x0+.6;x<x1;x+=2.4)barandal.caja(x,y0+.6,zf+cara*1.08,.05,1.05,.05);}
+   if(f>0){losas.caja(x1+.55,y0+.1,zm,1.1,.2,lz);barandal.caja(x1+1.08,y0+1.1,zm,.06,.06,lz);relleno.caja(x1+1.08,y0+.62,zm,.03,.9,lz);for(let z=z0+.6;z<z1;z+=2.4)barandal.caja(x1+1.08,y0+.6,z,.05,1.05,.05);}
+   for(const cara of caras){const zf=cara<0?z0:z1;huecos.caja(xm,y0+1.75,zf+cara*.06,lx-1.6,2.6,.1);
+    if(f>0){losas.caja(xm,y0+.1,zf+cara*.55,lx,.2,1.1);barandal.caja(xm,y0+1.1,zf+cara*1.08,lx,.06,.06);relleno.caja(xm,y0+.62,zf+cara*1.08,lx,.9,.03);for(let x=x0+.6;x<x1;x+=2.4)barandal.caja(x,y0+.6,zf+cara*1.08,.05,1.05,.05);}}
   }
-  for(const [px,pz] of [[x1+.3,z0+.4],[x1+.3,z1-.4],[x0+.4,zf+cara*.3]])pilastras.caja(px,height/2,pz,.9,height,.9);
-  for(const [px,pz] of [[x0+1,z0+1],[x1-.5,z0+1],[x0+1,z1-1],[x1-.5,z1-1]])remate.caja(px,height+1.4,pz,.14,2.8-(px-x0)/lx*1.2,.14);
+  for(const [px,pz] of [[x1+.3,z0+.4],[x1+.3,z1-.4],...caras.map(c=>[x0+.4,(c<0?z0:z1)+c*.3])])pilastras.caja(px,height/2,pz,.9,height,.9);
+  // Soportes de la azotea a la cara inferior de la tapa inclinada (gira −0.1 rad sobre su centro, a height+2.25).
+  for(const [px,pz] of [[x0+1,z0+1],[x1-.5,z0+1],[x0+1,z1-1],[x1-.5,z1-1]]){const yTop=height+2.25-.06-(px-xm)*Math.tan(.1);remate.caja(px,(height+yTop)/2,pz,.14,yTop-height,.14);}
   const tapa=new THREE.Mesh(cube,material('#c9cec9'));tapa.name='Remate_pergola_'+nombre;tapa.position.set(xm,height+2.25,zm);tapa.scale.set(lx+.6,.12,lz+.6);tapa.rotation.z=-.1;tapa.castShadow=true;g.add(tapa);
   huecos.malla(g,'Hueco_escaleras_'+nombre,material('#4a463f'));tramos.malla(g,'Tramo_escalera_'+nombre,material('#b9b7ad'));losas.malla(g,'Losa_balcon_'+nombre,material('#c9c8bf'));barandal.malla(g,'Barandal_blanco_'+nombre,material('#eeefe9'));relleno.malla(g,'Barandal_malla_'+nombre,railInfill,{sombra:false});pilastras.malla(g,'Pilastra_terracota_'+nombre,material(terra));remate.malla(g,'Soporte_pergola_'+nombre,material('#c9cec9'));
  }
@@ -268,7 +274,7 @@ function hill(parent,name,stations,slope,plateau,rise,face='muro'){const secs=st
  for(let i=1;i<secs.length;i++)for(let k=0;k<4;k++)quad(k?earth:wall,P(secs[i-1],k),P(secs[i],k),P(secs[i],k+1),P(secs[i-1],k+1));
  for(const s of [secs[0],secs[secs.length-1]])for(let k=1;k<4;k++)earth.push(...P(s,0),...P(s,k),...P(s,k+1));
  const g=new THREE.Group();g.name=name;parent.add(g);
- for(const [arr,color,part] of [[wall,face==='pasto'?'#8fa56f':'#8e8f89',face==='pasto'?'Cara_talud_pasto':'Muro_contencion'],[earth,'#93a873',face==='pasto'?'Ladera_talud':'Ladera_montecito']]){const geom=new THREE.BufferGeometry();geom.setAttribute('position',new THREE.Float32BufferAttribute(arr,3));geom.computeVertexNormals();const mat=new THREE.MeshStandardMaterial({color,roughness:.95,side:THREE.DoubleSide});if(part!=='Muro_contencion'){addDetail(mat,'pasto',9);relieveParaDetalle(mat,'pasto',9);}else{addDetail(mat,'muro',5);relieveParaDetalle(mat,'muro',5);}const m=new THREE.Mesh(geom,mat);m.name=part;m.userData.disposeMaterial=true;m.castShadow=true;m.receiveShadow=true;g.add(m);}
+ for(const [arr,color,part] of [[wall,face==='pasto'?'#7c9b55':'#8e8f89',face==='pasto'?'Cara_talud_pasto':'Muro_contencion'],[earth,face==='pasto'?'#86a35e':'#93a873',face==='pasto'?'Ladera_talud':'Ladera_montecito']]){const geom=new THREE.BufferGeometry();geom.setAttribute('position',new THREE.Float32BufferAttribute(arr,3));geom.computeVertexNormals();const mat=new THREE.MeshStandardMaterial({color,roughness:.95,side:THREE.DoubleSide});if(part!=='Muro_contencion'){addDetail(mat,'pasto',9);relieveParaDetalle(mat,'pasto',9);}else{addDetail(mat,'muro',5);relieveParaDetalle(mat,'muro',5);}const m=new THREE.Mesh(geom,mat);m.name=part;m.userData.disposeMaterial=true;m.castShadow=true;m.receiveShadow=true;g.add(m);}
  // at(z): sección interpolada; y(x) da la altura del terreno en esa sección (0 fuera del montecito).
  return {g,at:z=>{const j=secs.findIndex(s=>s.z>=z),b=secs[j<1?(j<0?secs.length-1:1):j],a=secs[secs.indexOf(b)-1],t=Math.max(0,Math.min(1,(z-a.z)/((b.z-a.z)||1))),pts=a.pts.map((p,k)=>[p[0]+(b.pts[k][0]-p[0])*t,p[1]+(b.pts[k][1]-p[1])*t]);
   return {h:pts[1][1],top:pts[1][0],plat:pts[2][0],y:x=>{for(let k=0;k<3;k++){const [x0,y0]=pts[k],[x1,y1]=pts[k+1];if(x>=x0&&x<=x1)return y0+(y1-y0)*(x-x0)/((x1-x0)||1);}return 0;}};}};}
@@ -283,7 +289,9 @@ function cuajimalpaCourts(){
  const lamp=(x,z)=>courtLight(sector,x,z,7,.35,.8),center=pts=>toWorld(pts.reduce((a,p)=>a+p[0],0)/pts.length,pts.reduce((a,p)=>a+p[1],0)/pts.length);
  // Andadores y explanadas: polilíneas con ancho (como los caminos), un poco más altas que el asfalto.
  for(const w of list(arch.walkways)){const pts=w?.points;if(!validId(w?.id)||!Array.isArray(pts)||pts.length<2||!pts.every(validPoint))continue;const width=num(w.width,1,30,4),color=/^#[0-9a-f]{6}$/i.test(w.color)?w.color:'#c8c3b5';
-  for(let i=1;i<pts.length;i++){const [ax,az]=pts[i-1],[bx,bz]=pts[i],dx=bx-ax,dz=bz-az,len=Math.hypot(dx,dz);if(len<.1)continue;const e0=i>1?width/2:0,e1=i<pts.length-1?width/2:0;const m=box(sector,'Andador_'+w.id,(ax+bx)/2+dx/len*(e1-e0)/2,.25,(az+bz)/2+dz/len*(e1-e0)/2,width,.2,len+e0+e1,color);m.rotation.y=Math.atan2(dx,dz);const wa=toWorld(ax,az),wb=toWorld(bx,bz);roadCorridors.push([wa.x,wa.z,wb.x,wb.z,width/2+2]);}
+  // Con quiebres (andador lateral): una sola franja con uniones a inglete, sin escalones en el borde exterior.
+  if(pts.length>2){const m=new THREE.Mesh(new THREE.ExtrudeGeometry(new THREE.Shape(trazo(pts,width).map(([x,z])=>new THREE.Vector2(x,-z))),{depth:.2,bevelEnabled:false}),material(color));m.name='Andador_'+w.id;m.rotation.x=-Math.PI/2;m.position.y=.15;m.receiveShadow=true;sector.add(m);}
+  for(let i=1;i<pts.length;i++){const [ax,az]=pts[i-1],[bx,bz]=pts[i],dx=bx-ax,dz=bz-az,len=Math.hypot(dx,dz);if(len<.1)continue;if(pts.length===2){const m=box(sector,'Andador_'+w.id,(ax+bx)/2,.25,(az+bz)/2,width,.2,len,color);m.rotation.y=Math.atan2(dx,dz);}const wa=toWorld(ax,az),wb=toWorld(bx,bz);roadCorridors.push([wa.x,wa.z,wb.x,wb.z,width/2+2]);}
   for(const t of list(w.trees))if(validPoint(t))tree(...toPx(...t),.55);for(const l of list(w.lamps))if(validPoint(l))lamp(...l);for(const a of list(w.assemblyPoints))if(validPoint(a))assemblyMark(sector,a[0],a[1],.38);
   if(typeof w.label==='string'){const c=center(pts);label(w.label.slice(0,40),c.x,3,c.z,'place');}}
  // Techumbres: frontón al sur de la cancha de fútbol y banca techada del camino de en medio.
@@ -303,7 +311,7 @@ function cuajimalpaCourts(){
   for(const s of list(t.stairs))if(Array.isArray(s)&&s.length===5&&s.every(n=>Number.isFinite(n)&&Math.abs(n)<250)){const [xa,za,xb,zb,w]=s,h=hl.at(zb).y(xb),len=Math.hypot(xb-xa,zb-za),n=Math.max(2,Math.ceil(h/.18)),rot=Math.atan2(xb-xa,zb-za);if(h<.3||len<1)continue;
    // Cada escalón queda por encima del muro en su borde alto, para que no se entierre donde el muro es más empinado.
    for(let k=0;k<n;k++){const f=(k+.5)/n,e=(k+1)/n,top=Math.max((k+1)*h/n,hl.at(za+(zb-za)*e).y(xa+(xb-xa)*e)+.05)+(k===n-1?.04:0),m=box(sector,'Escalon_montecito',xa+(xb-xa)*f,top/2,za+(zb-za)*f,Math.min(6,Math.max(1,w)),top,len/n+.02,'#c8c4b8');m.rotation.y=rot;}}
-  for(const p of list(t.trees))if(validPoint(p))tree(...toPx(...p),.7,false,hl.at(p[1]).y(p[0]));}
+  const ts=num(t.treeSize,.4,1.6,.7);for(const p of list(t.trees))if(validPoint(p))tree(...toPx(...p),ts,false,hl.at(p[1]).y(p[0]));}
  // Jardineras: polígono con guarnición, arbustos, rótulo, árboles y luminarias opcionales.
  for(const p of list(arch.planters)){const pts=p?.points;if(!validId(p?.id)||!Array.isArray(pts)||pts.length<3||pts.length>64||!pts.every(validPoint))continue;
   const m=new THREE.Mesh(new THREE.ExtrudeGeometry(new THREE.Shape(pts.map(([x,z])=>new THREE.Vector2(x,-z))),{depth:.3,bevelEnabled:false}),material('#7f9b58'));m.name='Jardinera_'+p.id.replace(/^jardinera_/,'');m.rotation.x=-Math.PI/2;m.position.y=.31;m.castShadow=true;m.receiveShadow=true;sector.add(m);
@@ -389,6 +397,8 @@ function tree(px,py,size=1,palm=false,elevation=0){
  const group=crearArbol({tipo:palm?'palmera':undefined,tamano:size,semilla:px*131+py,elevacion:elevation});group.position.set(X(px),0,Z(py));vegetation.add(group);
  registerEditable('tree_'+px+'_'+py,(palm?'Palmera':'Árbol')+' · '+Math.round(X(px))+', '+Math.round(Z(py))+' m','tree',group);
 }
+// Árboles dentro de los grupos del Ágora y la plaza trasera (userData.arbol): siguen la casilla «Árboles» igual que 'vegetation'.
+function verArboles(v){vegetation.visible=v;world.traverse(o=>{if(o.userData.arbol)o.visible=v;});}
 function inside(px,py,poly){let v=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){let a=poly[i],b=poly[j];if((a[1]>py)!=(b[1]>py)&&px<(b[0]-a[0])*(py-a[1])/(b[1]-a[1])+a[0])v=!v;}return v;}
 function excluded(x,y){const rects=[...data.buildings.flatMap(b=>b.rects),...data.plazas.map(p=>p.rect),...data.parking,...data.paths];return rects.some(r=>x>r[0]-10&&x<r[2]+10&&y>r[1]-10&&y<r[3]+10);}
 function generate(){
@@ -408,7 +418,7 @@ function generate(){
  cuajimalpaPlazaTrasera();
  let seed=1729;const rand=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
  for(let n=0;n<120;n++){const px=895+p.xMin+rand()*(p.xMax-p.xMin),py=390+p.zMin+rand()*(p.zMax-p.zMin);if(inside(px,py,data.site)&&!excluded(px,py)&&!nearRoad(X(px),Z(py)))tree(px,py,.6);}
- vegetation.visible=$('trees').checked;labelLayer.hidden=!$('names').checked;addCopyrightToModel();world.updateMatrixWorld(true);selectBuilding(selected);refreshEditor();
+ verArboles($('trees').checked);labelLayer.hidden=!$('names').checked;addCopyrightToModel();world.updateMatrixWorld(true);selectBuilding(selected);refreshEditor();
 }
 const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();let down;
 renderer.domElement.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);
@@ -445,14 +455,17 @@ function view(mode){topMode=mode==='top';focusMode=['approved','glass','entrance
  // Canchas: desde la entrada hacia la sede, como las fotos aéreas de referencia.
  $('courts').classList.toggle('active',mode==='courts');if(mode==='courts'){focusMode=true;focusSpan=60;minFocusDistance=215;const target=new THREE.Vector3(-3,0,-110).applyAxisAngle(new THREE.Vector3(0,1,0),CU_FRAME.angle);controls.target.set(X(CU_FRAME.x)+target.x,2,Z(CU_FRAME.z)+target.z);const delta=new THREE.Vector3(10,160,-125).applyAxisAngle(new THREE.Vector3(0,1,0),CU_FRAME.angle);camera.position.copy(controls.target).add(delta);}
  // Ágora: desde la plaza trasera hacia el foro y las gradas, como las fotos de campo; sigue al Ágora si se mueve.
- $('agora').classList.toggle('active',mode==='agora');if(mode==='agora'){focusMode=true;focusSpan=44;minFocusDistance=58;const e=editables.get('agora_cuajimalpa'),rot=e?.node.rotation.y??CU_FRAME.angle;controls.target.copy(e?.node.position||new THREE.Vector3());controls.target.y=4.5;const delta=new THREE.Vector3(36,14,-12).applyAxisAngle(new THREE.Vector3(0,1,0),rot);camera.position.copy(controls.target).add(delta);}
+ // Ágora: desde el oriente, a lo largo de la cara trasera y por fuera de ella (v > 41.4), con la celosía y las letras en primer
+ // plano como en la foto 5. El foro está pegado al muro del bloque poniente, así que desde atrás del edificio no se ve.
+ // Si se quitó el Ágora, apunta a su ancla en vez del origen del mundo.
+ $('agora').classList.toggle('active',mode==='agora');if(mode==='agora'){focusMode=true;focusSpan=27;minFocusDistance=48;const e=editables.get('agora_cuajimalpa'),rot=e?.node.rotation.y??CU_FRAME.angle;if(e)controls.target.copy(e.node.position);else{const [x,z]=localAMundo(...anclaLocal(data.architecture?.agora?.localPosition,[-16,57]));controls.target.set(x,0,z);}controls.target.y=3;const delta=new THREE.Vector3(40,13,-8).applyAxisAngle(new THREE.Vector3(0,1,0),rot);camera.position.copy(controls.target).add(delta);}
  if(mode==='access'){focusSpan=135;minFocusDistance=350;const target=new THREE.Vector3(0,0,-65).applyAxisAngle(new THREE.Vector3(0,1,0),CU_FRAME.angle);controls.target.set(X(CU_FRAME.x)+target.x,3,Z(CU_FRAME.z)+target.z);const delta=new THREE.Vector3(150,290,100).applyAxisAngle(new THREE.Vector3(0,1,0),CU_FRAME.angle);camera.position.copy(controls.target).add(delta);}
  camera.lookAt(controls.target);camera.updateProjectionMatrix();controls.update();for(const id of ['approved','glass','entrance','access','maps','top'])$(id).classList.toggle('active',id===mode);resize();}
 for(const mode of ['approved','glass','entrance','access','maps','top'])$(mode).onclick=()=>view(mode);
 $('courts').onclick=()=>view('courts');
 $('agora').onclick=()=>view('agora');
 $('spin').onclick=()=>{if(topMode)view('maps');controls.autoRotate=!controls.autoRotate;$('spin').classList.toggle('active',controls.autoRotate);};
-$('trees').onchange=()=>vegetation.visible=$('trees').checked;$('names').onchange=()=>labelLayer.hidden=!$('names').checked;$('grid').onchange=()=>grid.visible=$('grid').checked;
+$('trees').onchange=()=>verArboles($('trees').checked);$('names').onchange=()=>labelLayer.hidden=!$('names').checked;$('grid').onchange=()=>grid.visible=$('grid').checked;
 // Ambiente (efectos.js): hora del día, nublado y efectos AO/brillo; sólo cambian la vista, no el GLB ni el plano 2D.
 {const hh=$('hora'),nn=$('nublado'),pp=$('efectosPost'),sync=()=>{$('horaTxt').textContent=formatoHora(Number(hh.value));$('nubladoTxt').textContent=Math.round(nn.value*100)+' %';};
  if(hh&&nn&&pp){hh.value=efectos.getHora();nn.value=efectos.getNublado();sync();
@@ -462,7 +475,7 @@ $('trees').onchange=()=>vegetation.visible=$('trees').checked;$('names').onchang
 function message(text){$('status').textContent=text;clearTimeout(message.timer);message.timer=setTimeout(()=>$('status').textContent='',6500);}
 function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),6000);}
 async function save(blob,kind,name){if(location.protocol==='http:'&&['localhost','127.0.0.1'].includes(location.hostname)){const res=await fetch('/guardar/'+kind,{method:'POST',body:blob});if(!res.ok)throw Error('No se pudo guardar');const r=await res.json();message('Guardado en la carpeta del modelo: '+r.saved);}else{download(blob,name);message('Archivo preparado para descargar.');}}
-$('saveglb').onclick=async()=>{if(isSaving)return;const btn=$('saveglb');btn.disabled=true;message('Preparando modelo GLB…');const was=vegetation.visible;try{vegetation.visible=true;const result=await new GLTFExporter().parseAsync(world,{binary:true,onlyVisible:true});await save(new Blob([result],{type:'model/gltf-binary'}),'glb',UNIT.glb);}catch(e){$('error').textContent=e.message;}finally{vegetation.visible=was;btn.disabled=false;}};
+$('saveglb').onclick=async()=>{if(isSaving)return;const btn=$('saveglb');btn.disabled=true;message('Preparando modelo GLB…');const was=vegetation.visible;try{verArboles(true);const result=await new GLTFExporter().parseAsync(world,{binary:true,onlyVisible:true});await save(new Blob([result],{type:'model/gltf-binary'}),'glb',UNIT.glb);}catch(e){$('error').textContent=e.message;}finally{verArboles(was);btn.disabled=false;}};
 $('savejson').onclick=()=>saveEditorChanges(false);
 $('savepng').onclick=async()=>{efectos.render();const canvas=document.createElement('canvas');canvas.width=renderer.domElement.width;canvas.height=renderer.domElement.height;const ctx=canvas.getContext('2d');ctx.drawImage(renderer.domElement,0,0);const factor=canvas.width/mount.clientWidth;if($('names').checked)for(const l of labels){if(l.el.style.display==='none')continue;const x=parseFloat(l.el.style.left)*factor,y=parseFloat(l.el.style.top)*factor;ctx.font=`600 ${12*factor}px sans-serif`;const w=ctx.measureText(l.el.textContent).width+12*factor;ctx.fillStyle=l.el.classList.contains('vehicle')?'#bc3535':l.el.classList.contains('pedestrian')?'#1d72b6':'#fffdf0';ctx.fillRect(x-w/2,y-10*factor,w,20*factor);ctx.fillStyle=['vehicle','pedestrian'].some(c=>l.el.classList.contains(c))?'white':'#243b2e';ctx.textAlign='center';ctx.fillText(l.el.textContent,x,y+4*factor);}
  ctx.textAlign='left';ctx.font=`${12*factor}px sans-serif`;ctx.fillStyle='#344d3f';ctx.fillText('UAM Cuajimalpa · Croquis inicial aproximado',18*factor,canvas.height-18*factor);drawWatermark(ctx);canvas.toBlob(async b=>{try{await save(b,'png','Vista_UAM.png');}catch(e){message(e.message);}},'image/png');};
@@ -581,15 +594,15 @@ async function planoBlob(){
  const r=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});r.setSize(w,h,false);r.setClearColor(0,0);
  const cam=new THREE.OrthographicCamera(PLANO.xMin,PLANO.xMax,-PLANO.zMin,-PLANO.zMax,1,2500);cam.position.set(0,1000,0);cam.up.set(0,0,-1);cam.lookAt(0,0,0);
  const ocultos=[...['Base maqueta','Eje_5_Norte_Montevideo','Av_San_Pablo'].map(n=>world.getObjectByName(n)),sky,editHelper,highlight,...(()=>{const vida=[];world.traverse(o=>{if(o.name==='Vida_decorativa')vida.push(o);});return vida;})()].filter(Boolean).map(node=>({node,visible:node.visible})),was=vegetation.visible,fog=scene.fog,g=grid.visible;
- for(const o of ocultos)o.node.visible=false;vegetation.visible=true;scene.fog=null;grid.visible=false;
+ for(const o of ocultos)o.node.visible=false;verArboles(true);scene.fog=null;grid.visible=false;
  const salirPlano=efectos.modoPlano(); // luz original, sin cielo ni entorno: el plano no depende de la hora del visor
  try{r.outputColorSpace=renderer.outputColorSpace;r.toneMapping=renderer.toneMapping;r.toneMappingExposure=renderer.toneMappingExposure;r.render(scene,cam);salirPlano();return await watermarkedPlan(r.domElement);}
- finally{salirPlano();for(const o of ocultos)o.node.visible=o.visible;vegetation.visible=was;scene.fog=fog;grid.visible=g;r.dispose();}
+ finally{salirPlano();for(const o of ocultos)o.node.visible=o.visible;verArboles(was);scene.fog=fog;grid.visible=g;r.dispose();}
 }
 async function saveEditorChanges(withModel=true){
  if(isSaving)return;isSaving=true;resetDraw();updateSaveState();const buttons=['copyrightToggle','saveChanges','saveglb','savejson','apply','applyObject','deleteObject','resetObject','loadjson','toggleEdit','editUndo','editRedo'];for(const id of buttons)$(id).disabled=true;
  const snapshot=JSON.stringify(data);try{
-  if(withModel){const was=vegetation.visible;vegetation.visible=true;try{const result=await new GLTFExporter().parseAsync(world,{binary:true,onlyVisible:true});await save(new Blob([result],{type:'model/gltf-binary'}),'glb',UNIT.glb);}finally{vegetation.visible=was;}await save(await planoBlob(),'plano','plano_2d.png');}
+  if(withModel){const was=vegetation.visible;verArboles(true);try{const result=await new GLTFExporter().parseAsync(world,{binary:true,onlyVisible:true});await save(new Blob([result],{type:'model/gltf-binary'}),'glb',UNIT.glb);}finally{verArboles(was);}await save(await planoBlob(),'plano','plano_2d.png');}
   await save(new Blob([JSON.stringify(JSON.parse(snapshot),null,2)],{type:'application/json'}),'json','campus_editado.json');savedData=snapshot;message(withModel?'Cambios y modelo 3D guardados. Puedes avisarme para crear el checkpoint.':'Datos guardados. El botón Guardar cambios también actualiza el modelo 3D.');
  }catch(e){message('No se pudo completar el guardado: '+e.message);}finally{isSaving=false;for(const id of buttons)$(id).disabled=false;updateSaveState();}
 }

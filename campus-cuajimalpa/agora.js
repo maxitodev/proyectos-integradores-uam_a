@@ -18,12 +18,14 @@ import {Combinador, trazo} from 'geometria';
 import {crearArbol, crearPersona, prng, CONFIG} from 'vegetacion';
 
 // ───────────────────────── Niveles (cara superior, m) y trazo ─────────────────────────
-const Y_PREDIO = .1, Y_FORO = .22, Y_TERRAZA = 2.92, Y_BANCA = 1.42;
+const Y_PREDIO = .1, Y_FORO = .22, Y_TERRAZA = 2.92, Y_BANCA = 1.42, Y_PLAZA = .34;
+// Bolardos con cadena al arco frontal, sobre la plaza: el poniente en la franja de 0.58 m entre el muro del bloque poniente
+// (z −16.08 con el ancla por omisión) y la guarnición del foro; el oriente frente al remetimiento de la celosía.
 const PELDANO = .45, HUELLA = .9, N_GRADAS = 6, R_GRADAS = 29.6, CZ_GRADAS = -34, X_GRADAS = 11;
 const PASILLOS = [-4.2, 4.2], MEDIO_PASILLO = .65;
-const Z_BORDE_FORO = -15.5, X_FORO = [-15.6, 14.8];
+const Z_BORDE_FORO = -15.5, X_FORO = [-15.6, 14.8], BOLARDOS = [[-14.3, -15.8], [14.3, -16.7]];
 const ARCO_FRONTAL = {xa: -15.6, xb: 15.6, yPie: 1.2, clave: 12.5, z: -12.6, peralte: .9, ancho: .9, nodos: 40, yEsquina: 6, colgado: .35};
-const ARCO_TRASERO = {xa: -10.8, xb: 10.4, yPie: 3.72, clave: 9, z: 11.8, peralte: .75, ancho: .75, nodos: 26, yEsquina: 5.6, colgado: .3};
+const ARCO_TRASERO = {xa: -10.8, xb: 10.4, yPie: 3.72, clave: 9, z: 11.8, peralte: .75, ancho: .75, nodos: 26, yEsquina: 5.6, colgado: -.75};
 const MASTILES = [[-6.2, 1.6], [0, 1.8], [6.2, 1.6]], Y_ANILLO = 11.2, R_ANILLO = .8, R_MASTIL = .17, Y_CIMA = Y_ANILLO + .1;
 // Anclas laterales de la membrana: punta del puntal (a, a Y_ANCLA), base del puntal sobre la terraza y muerto del tirante.
 const ANCLAS = [{a: [-16.6, -.5], base: [-15.6, -.6], tirante: [-20.2, -.4]}, {a: [17.2, .3], base: [17.6, 1.0], tirante: [19.4, 1.3]}];
@@ -333,7 +335,7 @@ const MEMBRANA = (() => {
   const BASE = [], PLANTA = [];
   // Hundimiento interior: leve hacia el arco frontal (desde la plaza se ven las luminarias, fotos 2 y 3), mayor detrás y a los lados.
   const suave = (a, b, t) => { const x = Math.min(1, Math.max(0, (t - a) / (b - a))); return x * x * (3 - 2 * x); };
-  const hundir = (u, v) => -4.6 * Math.sin(Math.PI * u) ** .8 * Math.sin(Math.PI * v) * (.35 + .65 * suave(.45, .8, v));
+  const hundir = (u, v) => -4.6 * Math.sin(Math.PI * u) ** .8 * Math.sin(Math.PI * v) * (.35 + .65 * suave(.45, .8, v) * (1 - suave(.85, 1, v)));
   const ventana = (u, v) => (Math.sin(Math.PI * u) * Math.sin(Math.PI * v)) ** .25;
   // Conos: perfil de trompeta (empinado junto al anillo, más tendido lejos) unido suavemente a la superficie base
   // (unión «soft-max»): la cima queda plana a Y_CIMA dentro del anillo y nunca la tapa la superficie base.
@@ -590,7 +592,7 @@ function geoCables() {
   // Contravientos de los puntales
   for (const a of ANCLAS) l.tubo([[a.a[0], Y_ANCLA, a.a[1]], [a.tirante[0], alturaSuelo(...a.tirante) + .35, a.tirante[1]]], .024, 3);
   // Cadenas de los bolardos al arco frontal
-  for (const s of [-1, 1]) { const phi = s * (CF.phi0 - .2), [x, y] = enArco(CF, phi, -ARCO_FRONTAL.peralte / 2); l.tubo([[x, y, ARCO_FRONTAL.z - .3], [s * 14.3, 1.25, -16.7]], .03, 3); }
+  BOLARDOS.forEach(([bx, bz], k) => { const phi = (k ? 1 : -1) * (CF.phi0 - .2), [x, y] = enArco(CF, phi, -ARCO_FRONTAL.peralte / 2); l.tubo([[x, y, ARCO_FRONTAL.z - .3], [bx, Y_PLAZA + 1.15, bz]], .03, 3); });
   // Cadenas de las bocinas
   for (const s of [-1, 1]) {
     const x = s * 8.6, phi = Math.asin((x - CF.cx) / CF.R), [, y] = enArco(CF, phi, -ARCO_FRONTAL.peralte / 2);
@@ -660,21 +662,21 @@ export function construirAgora(g, ctx) {
   MESAS.forEach(([x, z, giro], k) => { const m = malla(g, `Mesa_picnic_${k + 1}`, mesa, matsMesa); m.position.set(x, Y_TERRAZA, z); m.rotation.y = giro; });
   // Botes de basura naranjas y bolardos
   const bote = geo('bote', geoBote), matsBote = [mat(COLOR.bote), mat(COLOR.boteBanda), mat(COLOR.oscuro)];
-  for (const [k, [x, z]] of [[-10.4, -11.2], [-11.6, 17.4], [14.2, 2.6], [-15.4, -16.6]].entries()) { const b = malla(g, `Bote_basura_${k + 1}`, bote, matsBote); b.position.set(x, alturaSuelo(x, z) > Y_FORO + .1 ? alturaSuelo(x, z) : z < Z_BORDE_FORO ? .34 : Y_FORO, z); }
+  for (const [k, [x, z]] of [[-10.4, -11.2], [-11.6, 17.4], [14.2, 2.6], [1.6, -16.4]].entries()) { const b = malla(g, `Bote_basura_${k + 1}`, bote, matsBote); b.position.set(x, alturaSuelo(x, z) > Y_FORO + .1 ? alturaSuelo(x, z) : z < Z_BORDE_FORO ? Y_PLAZA : Y_FORO, z); }
   const bol = geo('bolardo', geoBolardo);
-  for (const s of [-1, 1]) { const b = malla(g, `Bolardo_${s < 0 ? 'poniente' : 'oriente'}`, bol, mat(COLOR.pedestal)); b.position.set(s * 14.3, .1, -16.7); }
+  BOLARDOS.forEach(([x, z], k) => { const b = malla(g, `Bolardo_${k ? 'oriente' : 'poniente'}`, bol, mat(COLOR.pedestal)); b.position.set(x, Y_PLAZA, z); });
 
   // Árboles: grandes al poniente y al fondo (talud), arbustos junto a la terraza.
   const arboles = [['cedro', -21.4, -3.2, 1.05], ['fresno', -22.6, 4.6, 1.15], ['cedro', -22.2, 12.2, 1], ['fresno', -18.4, 20.4, 1.1], ['cedro', -12.5, 23.6, .95],
     ['fresno', -1.6, 17.6, 1.05], ['cedro', 6.2, 15.4, .85], ['fresno', 18.4, 6.2, .95], ['cedro', 22.5, 14.5, 1.1], ['fresno', 4.5, 22.5, 1.2], ['cedro', -27.5, -9.5, 1.1],
     ['arbusto', -17.6, 8.6, 1.2], ['arbusto', -15.8, -8.4, 1.1], ['arbusto', -14.2, -6.4, 1.3], ['arbusto', -12.7, -4.3, 1], ['arbusto', -16.4, -4.2, 1.2], ['arbusto', 13.4, 4.2, 1.1], ['arbusto', -4.2, 21.8, 1.3], ['arbusto', -19.5, -7.2, 1], ['arbusto', 19.7, 2.4, 1.2], ['arbusto', 20.8, -.9, 1], ['arbusto', 9.6, 5.6, 1.1], ['arbusto', 11.9, 7.8, 1.2], ['arbusto', -9.8, 5.2, 1.1]];
-  arboles.forEach(([tipo, x, z, t], k) => { const a = crearArbol({tipo, tamano: t, semilla: semillaArbol(tipo, k), elevacion: alturaSuelo(x, z)}); a.name = `Arbol_agora_${tipo}_${k + 1}`; a.position.set(x, 0, z); g.add(a); });
+  arboles.forEach(([tipo, x, z, t], k) => { const a = crearArbol({tipo, tamano: t, semilla: semillaArbol(tipo, k), elevacion: alturaSuelo(x, z)}); a.name = `Arbol_agora_${tipo}_${k + 1}`; a.userData.arbol = true; a.position.set(x, 0, z); g.add(a); });
 
   // Personas (el plano 2D oculta 'Vida_decorativa')
   const vida = new THREE.Group(); vida.name = 'Vida_decorativa'; vida.userData = {decorativo: true}; g.add(vida);
   const grada = (k, x) => { const R = R_GRADAS + (k - 1) * HUELLA + .55; return [x, Y_FORO + k * PELDANO, ZR(R, x)]; };
   const personas = [
-    [[-2.6, Y_FORO, -9.4], .4, 'pie'], [[-1.8, Y_FORO, -8.8], -2.6, 'pie'], [[5.5, Y_FORO, -11.5], -1.2, 'camina'], [[-9.5, .34, -17.6], 1.4, 'camina'],
+    [[-2.6, Y_FORO, -9.4], .4, 'pie'], [[-1.8, Y_FORO, -8.8], -2.6, 'pie'], [[5.5, Y_FORO, -11.5], -1.2, 'camina'], [[6.5, Y_PLAZA, -18.2], 1.4, 'camina'],
     [grada(2, -7.2), Math.PI, 'pie'], [grada(4, 1.6), Math.PI + .2, 'pie'], [grada(1, 8.2), Math.PI - .3, 'pie'], [grada(5, -1.2), Math.PI, 'camina'],
     [[-13, Y_TERRAZA, 12.2], .1, 'pie'], [[-6.5, Y_TERRAZA, 16.9], .3, 'pie'], [[15.1, Y_TERRAZA + .02, 5.0], 2.7, 'camina'], [[15.9, .34 + 8 * ESCALERA.tramos[0].contra, -4.9], 0, 'camina'],
   ];
