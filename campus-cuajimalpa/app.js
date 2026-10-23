@@ -4,7 +4,8 @@ import {GLTFExporter} from 'exporter';
 import {ORIGINAL} from 'model-data';
 import {copyrightPanelsForSite} from 'copyright-layout';
 import {createEfectos,formatoHora} from 'efectos';
-import {crearArbol,colocarVida,relieveParaDetalle} from 'vegetacion';
+import {crearArbol,colocarVida,relieveParaDetalle,urlTextura} from 'vegetacion';
+import {VISOR,leerIncrustado,reemplazarDatos} from 'incrustar';
 import {construirAgora} from 'agora';
 import {Combinador,trazo} from 'geometria';
 import {construirPlazaTrasera,construirCostado,construirLetrero} from 'plaza-trasera';
@@ -30,10 +31,10 @@ const efectos=createEfectos({renderer,scene,getCamera:()=>camera,getSun:()=>sun,
 const grid=new THREE.GridHelper(1000,100,'#6f8f80','#b9c9bc');grid.position.y=.3;grid.visible=false;scene.add(grid);
 const matCache=new Map();
 // Detalle fotográfico (texturas CC0 de ambientCG en texturas/): se proyecta en coordenadas del mundo dentro del shader y no es material.map,
-// así el GLB y el plano 2D conservan colores planos y livianos. Si la imagen no carga (p. ej. visor autónomo abierto como archivo) no pasa nada.
+// así el GLB y el plano 2D conservan colores planos y livianos. En el visor autónomo vienen incrustadas (urlTextura); si una imagen no carga no pasa nada.
 const detailCache={},white=new THREE.DataTexture(new Uint8Array([255,255,255,255]),1,1);white.needsUpdate=true;
 function detail(name){if(detailCache[name])return detailCache[name];const e=detailCache[name]={u:{tex:{value:white},avg:{value:new THREE.Vector3(1,1,1)},k:{value:0}}};
- new THREE.TextureLoader().load('./texturas/'+name+'.jpg',t=>{t.wrapS=t.wrapT=THREE.RepeatWrapping;t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;const c=document.createElement('canvas');c.width=c.height=8;const x=c.getContext('2d');x.drawImage(t.image,0,0,8,8);const d=x.getImageData(0,0,8,8).data;let r=0,g=0,b=0;for(let i=0;i<d.length;i+=4){r+=d[i];g+=d[i+1];b+=d[i+2];}const n=d.length/4*255;e.u.avg.value.set(...[r,g,b].map(v=>Math.pow(v/n,2.2)));e.u.tex.value=t;e.u.k.value=.8;},undefined,()=>{});return e;}
+ new THREE.TextureLoader().load(urlTextura(name),t=>{t.wrapS=t.wrapT=THREE.RepeatWrapping;t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;const c=document.createElement('canvas');c.width=c.height=8;const x=c.getContext('2d');x.drawImage(t.image,0,0,8,8);const d=x.getImageData(0,0,8,8).data;let r=0,g=0,b=0;for(let i=0;i<d.length;i+=4){r+=d[i];g+=d[i+1];b+=d[i+2];}const n=d.length/4*255;e.u.avg.value.set(...[r,g,b].map(v=>Math.pow(v/n,2.2)));e.u.tex.value=t;e.u.k.value=.8;},undefined,()=>{});return e;}
 const DETAIL={'#90aa81':['pasto',9],'#7c9b55':['pasto',6],'#86a35e':['pasto',6],'#8f918b':['asfalto',7],'#c8c3b5':['concreto',6],'#cdc6b8':['concreto',6],'#c9c8bf':['concreto',6],'#c0b9a6':['concreto',6],'#d5cbb1':['concreto',6],'#3f8048':['pasto',3.5],'#6a9a46':['pasto',3.5],'#b47e63':['concreto',3],'#777f78':['asfalto2',6],'#a5a69b':['concreto',6],'#b87861':['ladrillo',2],'#d6d3c5':['concreto',5],'#d3cfc4':['concreto',3],'#45484a':['asfalto',7],'#7f5747':['concreto',3],'#a8695e':['concreto',3],'#8f8e86':['concreto',2.5],'#6b6e6e':['asfalto',7]};
 function addDetail(m,name,scale){const e=detail(name);m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,{dTex:e.u.tex,dAvg:e.u.avg,dK:e.u.k,dS:{value:scale}});
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vWp,vWn;').replace('#include <begin_vertex>','#include <begin_vertex>\nvWp=(modelMatrix*vec4(transformed,1.0)).xyz;vWn=normalize(mat3(modelMatrix)*objectNormal);');
@@ -474,11 +475,48 @@ $('trees').onchange=()=>verArboles($('trees').checked);$('names').onchange=()=>l
  pp.onchange=()=>{efectos.usePost=pp.checked;pp.checked=efectos.usePost;message(efectos.usePost?'Efectos activados: más carga de GPU.':'Efectos desactivados.');};}}
 function message(text){$('status').textContent=text;clearTimeout(message.timer);message.timer=setTimeout(()=>$('status').textContent='',6500);}
 function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),6000);}
-async function save(blob,kind,name){if(location.protocol==='http:'&&['localhost','127.0.0.1'].includes(location.hostname)){const res=await fetch('/guardar/'+kind,{method:'POST',body:blob});if(!res.ok)throw Error('No se pudo guardar');const r=await res.json();message('Guardado en la carpeta del modelo: '+r.saved);}else{download(blob,name);message('Archivo preparado para descargar.');}}
-$('saveglb').onclick=async()=>{if(isSaving)return;const btn=$('saveglb');btn.disabled=true;message('Preparando modelo GLB…');const was=vegetation.visible;try{verArboles(true);const result=await new GLTFExporter().parseAsync(world,{binary:true,onlyVisible:true});await save(new Blob([result],{type:'model/gltf-binary'}),'glb',UNIT.glb);}catch(e){$('error').textContent=e.message;}finally{verArboles(was);btn.disabled=false;}};
+// Tres formas de guardar: con server.mjs (POST), en la carpeta del visor elegida una vez (File System Access API: Chrome/Edge,
+// también abierto con doble clic) o, si el navegador no la tiene (Firefox/Safari), descargas. Mismos nombres que server.mjs.
+const SERVIDOR_LOCAL=location.protocol==='http:'&&['localhost','127.0.0.1'].includes(location.hostname);
+const ARCHIVOS={glb:UNIT.glb,json:'campus_editado.json',png:'Vista_actual.png',plano:'plano_2d.png','glb-sin-marca':UNIT.glb.replace(/\.glb$/,'_sin_marca.glb'),'plano-sin-marca':'plano_2d_sin_marca.png'};
+const NOMBRE_VISOR=location.protocol==='file:'&&/\.html?$/i.test(location.pathname)?decodeURIComponent(location.pathname.split('/').pop()):VISOR;
+const INCRUSTADO=leerIncrustado(document); // {campus, georreferencia, guardado, origen} que dejó build.mjs o el último Guardar
+// La carpeta se recuerda por ruta del HTML: en Chrome todos los file:// comparten IndexedDB, y con dos copias del repo
+// (p. ej. la réplica de Descargas) una clave fija haría guardar en la copia equivocada.
+let carpeta=null;const CLAVE_CARPETA='carpeta:'+location.pathname;
+function baseDeDatos(modo,accion){return new Promise((ok,mal)=>{const q=indexedDB.open('visor-uam',1);q.onupgradeneeded=()=>q.result.createObjectStore('carpetas');q.onerror=()=>mal(q.error);
+ q.onsuccess=()=>{const tx=q.result.transaction('carpetas',modo),r=accion(tx.objectStore('carpetas'));tx.oncomplete=()=>{q.result.close();ok(r.result);};tx.onerror=()=>mal(tx.error);};});}
+// Se llama al empezar el clic (antes de exportar el GLB) para no perder la activación del usuario que exigen el selector y el permiso.
+async function carpetaDelVisor(){
+ if(SERVIDOR_LOCAL||typeof window.showDirectoryPicker!=='function')return null;
+ if(!carpeta){try{carpeta=await baseDeDatos('readonly',s=>s.get(CLAVE_CARPETA))||null;}catch{carpeta=null;}}
+ const modo={mode:'readwrite'};
+ if(carpeta&&(await carpeta.queryPermission(modo)==='granted'||await carpeta.requestPermission(modo)==='granted')){try{await carpeta.getFileHandle(NOMBRE_VISOR);return carpeta;}catch{carpeta=null; /* se movió o borró: elegirla otra vez */ }}
+ message('Elige la carpeta donde está '+NOMBRE_VISOR+' (campus-cuajimalpa). Sólo se pide una vez.');
+ const elegida=await window.showDirectoryPicker({id:'campus-'+UNIT.slug,mode:'readwrite',startIn:'documents'});
+ try{await elegida.getFileHandle(NOMBRE_VISOR);}catch{throw Error('En «'+elegida.name+'» no está '+NOMBRE_VISOR+'. Elige la carpeta campus-cuajimalpa donde abriste el visor.');}
+ carpeta=elegida;try{await baseDeDatos('readwrite',s=>s.put(elegida,CLAVE_CARPETA));}catch{ /* sin IndexedDB se volverá a pedir la carpeta */ }
+ return carpeta;
+}
+async function leerDeCarpeta(dir,nombre){try{return await (await (await dir.getFileHandle(nombre)).getFile()).text();}catch{return null;}}
+async function escribirEnCarpeta(dir,nombre,blob){const w=await (await dir.getFileHandle(nombre,{create:true})).createWritable();await w.write(blob);await w.close();}
+// El HTML se reescribe con el bloque de datos nuevo: al abrirlo otra vez con doble clic se ven los cambios.
+async function actualizarVisor(dir,snapshot){
+ let geo=INCRUSTADO?.georreferencia||georeference;try{const g=JSON.parse(await leerDeCarpeta(dir,'georreferencia.json'));if(campusNorth(g))geo=g;}catch{ /* se conserva la incrustada */ }
+ const html=await leerDeCarpeta(dir,NOMBRE_VISOR);if(html===null)throw Error('No se encontró '+NOMBRE_VISOR+' en la carpeta.');
+ await escribirEnCarpeta(dir,NOMBRE_VISOR,new Blob([reemplazarDatos(html,{campus:JSON.parse(snapshot),georreferencia:geo,guardado:new Date().toISOString(),origen:'visor'})],{type:'text/html'}));
+}
+async function save(blob,kind,name,dir=null){if(SERVIDOR_LOCAL){const res=await fetch('/guardar/'+kind,{method:'POST',body:blob});if(!res.ok)throw Error('No se pudo guardar');const r=await res.json();message('Guardado en la carpeta del modelo: '+r.saved);}else if(dir){await escribirEnCarpeta(dir,ARCHIVOS[kind],blob);message('Guardado en la carpeta '+dir.name+': '+ARCHIVOS[kind]);}else{download(blob,name);message('Archivo preparado para descargar.');}}
+// Antes de pisar campus_editado.json: si el de la carpeta no es el que se abrió (p. ej. llegó otro con git), preguntar.
+async function confirmarSobrescribir(dir){
+ const texto=await leerDeCarpeta(dir,'campus_editado.json');if(texto===null)return true;
+ try{if(JSON.stringify(validateCampus(JSON.parse(texto)))===savedData)return true;}catch{ /* inválido: se pregunta */ }
+ return confirm('campus_editado.json de la carpeta no coincide con el diseño que abriste (quizá llegó otra versión con git).\n\nAceptar: sobrescribirlo con tus cambios.\nCancelar: no guardar; usa «Abrir datos guardados» para revisarlo primero.');
+}
+$('saveglb').onclick=async()=>{if(isSaving)return;const btn=$('saveglb');btn.disabled=true;message('Preparando modelo GLB…');const was=vegetation.visible;try{const dir=await carpetaDelVisor().catch(e=>{if(e.name==='AbortError')return null;throw e;});verArboles(true);const result=await new GLTFExporter().parseAsync(world,{binary:true,onlyVisible:true});await save(new Blob([result],{type:'model/gltf-binary'}),'glb',UNIT.glb,dir);}catch(e){$('error').textContent=e.message;}finally{verArboles(was);btn.disabled=false;}};
 $('savejson').onclick=()=>saveEditorChanges(false);
 $('savepng').onclick=async()=>{efectos.render();const canvas=document.createElement('canvas');canvas.width=renderer.domElement.width;canvas.height=renderer.domElement.height;const ctx=canvas.getContext('2d');ctx.drawImage(renderer.domElement,0,0);const factor=canvas.width/mount.clientWidth;if($('names').checked)for(const l of labels){if(l.el.style.display==='none')continue;const x=parseFloat(l.el.style.left)*factor,y=parseFloat(l.el.style.top)*factor;ctx.font=`600 ${12*factor}px sans-serif`;const w=ctx.measureText(l.el.textContent).width+12*factor;ctx.fillStyle=l.el.classList.contains('vehicle')?'#bc3535':l.el.classList.contains('pedestrian')?'#1d72b6':'#fffdf0';ctx.fillRect(x-w/2,y-10*factor,w,20*factor);ctx.fillStyle=['vehicle','pedestrian'].some(c=>l.el.classList.contains(c))?'white':'#243b2e';ctx.textAlign='center';ctx.fillText(l.el.textContent,x,y+4*factor);}
- ctx.textAlign='left';ctx.font=`${12*factor}px sans-serif`;ctx.fillStyle='#344d3f';ctx.fillText('UAM Cuajimalpa · Croquis inicial aproximado',18*factor,canvas.height-18*factor);drawWatermark(ctx);canvas.toBlob(async b=>{try{await save(b,'png','Vista_UAM.png');}catch(e){message(e.message);}},'image/png');};
+ ctx.textAlign='left';ctx.font=`${12*factor}px sans-serif`;ctx.fillStyle='#344d3f';ctx.fillText('UAM Cuajimalpa · Croquis inicial aproximado',18*factor,canvas.height-18*factor);drawWatermark(ctx);let dir=null;try{dir=await carpetaDelVisor();}catch(e){if(e.name!=='AbortError'){message(e.message);return;}}canvas.toBlob(async b=>{try{await save(b,'png','Vista_UAM.png',dir);}catch(e){message(e.message);}},'image/png');};
 $('loadjson').onclick=()=>$('filejson').click();
 $('filejson').onchange=async e=>{try{if(!e.target.files[0])return;const loaded=validateCampus(JSON.parse(await e.target.files[0].text()));rememberEdit();data=loaded;selected='';editSelected='';generate();updateSaveState();message('Datos cargados. Usa Guardar cambios para conservarlos.');}catch(e){message('No se pudo abrir: '+e.message);}finally{e.target.value='';}};
 // Editor ligero: los cambios son datos; los controles no forman parte del GLB.
@@ -585,37 +623,49 @@ function drawWatermark(ctx){
  const text='copyright @gabrielhuav',margin=12,size=14;ctx.save();ctx.font='500 '+size+'px system-ui, sans-serif';ctx.textAlign='right';ctx.textBaseline='bottom';const width=ctx.measureText(text).width;
  ctx.fillStyle='rgba(255,255,255,.78)';ctx.fillRect(ctx.canvas.width-margin-width-8,ctx.canvas.height-margin-size-6,width+16,size+12);ctx.fillStyle=copyrightStyle().color;ctx.fillText(text,ctx.canvas.width-margin,ctx.canvas.height-margin);ctx.restore();
 }
-async function watermarkedPlan(source){
- const canvas=document.createElement('canvas');canvas.width=source.width;canvas.height=source.height;const ctx=canvas.getContext('2d');ctx.drawImage(source,0,0);drawWatermark(ctx);return await new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(Error('No se pudo crear el plano PNG.')),'image/png'));
+async function watermarkedPlan(source,conMarca=true){
+ const canvas=document.createElement('canvas');canvas.width=source.width;canvas.height=source.height;const ctx=canvas.getContext('2d');ctx.drawImage(source,0,0);if(conMarca)drawWatermark(ctx);return await new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(Error('No se pudo crear el plano PNG.')),'image/png'));
 }
 const PLANO=UNIT.plan;
-async function planoBlob(){
+async function planoBlob(conMarca=true){
  const w=(PLANO.xMax-PLANO.xMin)*PLANO.pxPorMetro,h=(PLANO.zMax-PLANO.zMin)*PLANO.pxPorMetro;
  const r=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});r.setSize(w,h,false);r.setClearColor(0,0);
  const cam=new THREE.OrthographicCamera(PLANO.xMin,PLANO.xMax,-PLANO.zMin,-PLANO.zMax,1,2500);cam.position.set(0,1000,0);cam.up.set(0,0,-1);cam.lookAt(0,0,0);
  const ocultos=[...['Base maqueta','Eje_5_Norte_Montevideo','Av_San_Pablo'].map(n=>world.getObjectByName(n)),sky,editHelper,highlight,...(()=>{const vida=[];world.traverse(o=>{if(o.name==='Vida_decorativa')vida.push(o);});return vida;})()].filter(Boolean).map(node=>({node,visible:node.visible})),was=vegetation.visible,fog=scene.fog,g=grid.visible;
  for(const o of ocultos)o.node.visible=false;verArboles(true);scene.fog=null;grid.visible=false;
  const salirPlano=efectos.modoPlano(); // luz original, sin cielo ni entorno: el plano no depende de la hora del visor
- try{r.outputColorSpace=renderer.outputColorSpace;r.toneMapping=renderer.toneMapping;r.toneMappingExposure=renderer.toneMappingExposure;r.render(scene,cam);salirPlano();return await watermarkedPlan(r.domElement);}
+ try{r.outputColorSpace=renderer.outputColorSpace;r.toneMapping=renderer.toneMapping;r.toneMappingExposure=renderer.toneMappingExposure;r.render(scene,cam);salirPlano();return await watermarkedPlan(r.domElement,conMarca);}
  finally{salirPlano();for(const o of ocultos)o.node.visible=o.visible;verArboles(was);scene.fog=fog;grid.visible=g;r.dispose();}
 }
 async function saveEditorChanges(withModel=true){
- if(isSaving)return;isSaving=true;resetDraw();updateSaveState();const buttons=['copyrightToggle','saveChanges','saveglb','savejson','apply','applyObject','deleteObject','resetObject','loadjson','toggleEdit','editUndo','editRedo'];for(const id of buttons)$(id).disabled=true;
+ if(isSaving)return;isSaving=true;
+ let dir=null;try{dir=await carpetaDelVisor();if(dir&&!await confirmarSobrescribir(dir)){isSaving=false;message('No se guardó: campus_editado.json de la carpeta es distinto. Ábrelo con «Abrir datos guardados» para revisarlo.');return;}}
+ catch(e){isSaving=false;message(e.name==='AbortError'?'Guardado cancelado: elige la carpeta campus-cuajimalpa para guardar ahí.':'No se pudo usar la carpeta: '+e.message);return;}
+ resetDraw();updateSaveState();const buttons=['copyrightToggle','saveChanges','saveglb','savejson','apply','applyObject','deleteObject','resetObject','loadjson','toggleEdit','editUndo','editRedo'];for(const id of buttons)$(id).disabled=true;
  const snapshot=JSON.stringify(data);try{
-  if(withModel){const was=vegetation.visible;verArboles(true);try{const result=await new GLTFExporter().parseAsync(world,{binary:true,onlyVisible:true});await save(new Blob([result],{type:'model/gltf-binary'}),'glb',UNIT.glb);}finally{verArboles(was);}await save(await planoBlob(),'plano','plano_2d.png');}
-  await save(new Blob([JSON.stringify(JSON.parse(snapshot),null,2)],{type:'application/json'}),'json','campus_editado.json');savedData=snapshot;message(withModel?'Cambios y modelo 3D guardados. Puedes avisarme para crear el checkpoint.':'Datos guardados. El botón Guardar cambios también actualiza el modelo 3D.');
+  if(withModel){const was=vegetation.visible,marca=world.getObjectByName('Marca_copyright_modelo'),marcaVisible=marca?.visible;verArboles(true);try{
+   const exportar=async()=>new Blob([await new GLTFExporter().parseAsync(world,{binary:true,onlyVisible:true})],{type:'model/gltf-binary'});
+   const glb=await exportar(),plano=await planoBlob();await save(glb,'glb',UNIT.glb,dir);await save(plano,'plano','plano_2d.png',dir);
+   // Variantes sin marca que copian las apps; con la marca apagada son los mismos archivos. Las descargas se quedan en las tres de siempre.
+   if(SERVIDOR_LOCAL||dir){const conMarca=copyrightEnabled();if(marca)marca.visible=false;await save(conMarca?await exportar():glb,'glb-sin-marca',ARCHIVOS['glb-sin-marca'],dir);await save(conMarca?await planoBlob(false):plano,'plano-sin-marca',ARCHIVOS['plano-sin-marca'],dir);}
+  }finally{verArboles(was);if(marca)marca.visible=marcaVisible;}}
+  await save(new Blob([JSON.stringify(JSON.parse(snapshot),null,2)],{type:'application/json'}),'json','campus_editado.json',dir);if(dir)await actualizarVisor(dir,snapshot);savedData=snapshot;
+  message(dir?'Guardado en la carpeta '+dir.name+': campus_editado.json'+(withModel?', '+UNIT.glb+', plano_2d.png, sus variantes sin marca':'')+' y '+NOMBRE_VISOR+' (ábrelo con doble clic y verás tus cambios).':SERVIDOR_LOCAL?(withModel?'Cambios y modelo 3D guardados. Puedes avisarme para crear el checkpoint.':'Datos guardados. El botón Guardar cambios también actualiza el modelo 3D.'):'Archivos descargados: muévelos a la carpeta campus-cuajimalpa. Este navegador no puede guardar en la carpeta; usa Chrome o Edge, o «Abrir datos guardados».');
  }catch(e){message('No se pudo completar el guardado: '+e.message);}finally{isSaving=false;for(const id of buttons)$(id).disabled=false;updateSaveState();}
 }
 $('saveChanges').onclick=()=>saveEditorChanges(true);
 
 async function startCampus(){
  if(location.protocol==='http:'){try{const geo=await fetch('./georreferencia.json',{cache:'no-store'});if(geo.ok){const candidate=await geo.json();if(campusNorth(candidate))georeference=candidate;}}catch{ /* El visor portátil mantiene su orientación de reserva. */ }}
- let notice='Listo: gira el modelo con el ratón.';
- if(location.protocol==='http:'&&['localhost','127.0.0.1'].includes(location.hostname)){
-  try{const response=await fetch('./campus_editado.json',{cache:'no-store'});if(response.ok){data=validateCampus(await response.json());notice='Se cargaron tus últimos cambios guardados.';}}
-  catch(e){notice='No se pudieron cargar los datos guardados. Se muestra la base; revisa el archivo antes de guardar.';}
+ if(!georeference&&campusNorth(INCRUSTADO?.georreferencia))georeference=INCRUSTADO.georreferencia;
+ let notice='Listo: gira el modelo con el ratón.',cargado=false;
+ if(SERVIDOR_LOCAL){
+  try{const response=await fetch('./campus_editado.json',{cache:'no-store'});if(response.ok){data=validateCampus(await response.json());notice='Se cargaron tus últimos cambios guardados.';cargado=true;}}
+  catch(e){notice='No se pudieron cargar los datos guardados. Se muestra la base; revisa el archivo antes de guardar.';cargado=true;}
  }
- efectos.setNorte(campusNorth(georeference));data.version=8;savedData=JSON.stringify(data);generate();view('approved');resize();updateSaveState();message(notice);
+ // Abierto con doble clic (o publicado): el diseño del equipo viaja dentro del HTML.
+ if(!cargado&&INCRUSTADO?.campus){try{data=validateCampus(INCRUSTADO.campus);notice='Diseño del equipo cargado'+(INCRUSTADO.guardado?' (guardado el '+new Date(INCRUSTADO.guardado).toLocaleString('es-MX',{dateStyle:'medium',timeStyle:'short'})+')':'')+'.';}catch(e){notice='Los datos incrustados no son válidos ('+e.message+'). Se muestra la base.';}}
+ if(!SERVIDOR_LOCAL)$('guardarAyuda').hidden=false;efectos.setNorte(campusNorth(georeference));data.version=8;savedData=JSON.stringify(data);generate();view('approved');resize();updateSaveState();message(notice);
 }
 startCampus();
 const v=new THREE.Vector3();function animate(){requestAnimationFrame(animate);controls.update();efectos.render();const w=mount.clientWidth,h=mount.clientHeight;for(const l of labels){v.copy(l.p).project(camera);l.el.style.display=v.z<1&&v.z>-1&&Math.abs(v.x)<1.1&&Math.abs(v.y)<1.1?'':'none';l.el.style.left=((v.x+1)*w/2)+'px';l.el.style.top=((-v.y+1)*h/2)+'px';}

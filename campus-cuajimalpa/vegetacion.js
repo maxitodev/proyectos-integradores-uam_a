@@ -520,11 +520,21 @@ const RELIEVE = new WeakSet(); // materiales ya mejorados (evita doble inyecció
 const holder = t => !t ? null : typeof t === 'string' ? texturaRelieve(t) : t.isTexture ? {value: t} : t;
 const _plana = new THREE.DataTexture(new Uint8Array([128, 128, 255, 255]), 1, 1); _plana.needsUpdate = true;
 const _texRelieve = new Map();
-// Carga asíncrona con textura plana de reserva: si el archivo no existe (p. ej. visor autónomo) no pasa nada.
+// Texturas incrustadas por build.mjs en Visor_UAM_autonomo.html (bloque JSON id="uam-texturas", data: URI): abierto con doble clic
+// (file://) el navegador bloquea por CORS las imágenes de ./texturas/, las data: URI no. Sin bloque (index.html servido) se piden a la carpeta.
+let _incrustadas = null;
+export function urlTextura(nombre, ruta = './texturas/') {
+  if (_incrustadas === null) {
+    _incrustadas = {};
+    try { const el = typeof document !== 'undefined' && document.getElementById('uam-texturas'); if (el) _incrustadas = JSON.parse(el.textContent); } catch { /* sin texturas incrustadas */ }
+  }
+  return _incrustadas[nombre] || ruta + nombre + '.jpg';
+}
+// Carga asíncrona con textura plana de reserva: si el archivo no existe no pasa nada.
 export function texturaRelieve(nombre, ruta = './texturas/') {
   if (_texRelieve.has(nombre)) return _texRelieve.get(nombre);
   const h = {value: _plana}; _texRelieve.set(nombre, h);
-  if (typeof document !== 'undefined') new THREE.TextureLoader().load(ruta + nombre + '.jpg', t => { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8; h.value = t; }, undefined, () => {});
+  if (typeof document !== 'undefined') new THREE.TextureLoader().load(urlTextura(nombre, ruta), t => { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8; h.value = t; }, undefined, () => {});
   return h;
 }
 const GLSL_RUIDO = `float rlHash(vec3 p){p=fract(p*0.3183099+0.1);p*=17.0;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}

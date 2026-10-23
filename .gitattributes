@@ -2,3 +2,10 @@
 *.glb binary
 *.png binary
 *.jpg binary
+
+# Visor del campus: fuentes en LF para que build.mjs genere el mismo HTML en Windows y en Linux
+campus-cuajimalpa/**/*.js text eol=lf
+campus-cuajimalpa/**/*.mjs text eol=lf
+campus-cuajimalpa/**/*.html text eol=lf
+# Visor_UAM_autonomo.html lo genera build.mjs (y lo actualiza Guardar cambios): GitHub lo colapsa en los PR
+campus-cuajimalpa/Visor_UAM_autonomo.html linguist-generated=true

@@ -171,6 +171,7 @@ curl -X DELETE http://localhost:5000/lugares/1 \
 - Docker Desktop con Docker Compose.
 - Android Studio con SDK y emulador Android, o un teléfono Android con depuración USB.
 - JDK 11 o posterior para la app Android.
+- Chrome o Edge para el visor del campus de la Práctica 3 (se abre con doble clic, sin Node.js): ver [Ejecutar el visor del campus](#ejecutar-el-visor-del-campus).
 
 ### 1. Configurar variables de entorno
 
@@ -285,14 +286,17 @@ Esta práctica permitió integrar en un solo flujo la persistencia en PostgreSQL
 
 El equipo trabaja en la Unidad Cuajimalpa, en [`campus-cuajimalpa/`](campus-cuajimalpa/), carpeta copiada del repositorio de ejemplo del profesor (Hurtado Avilés, 2026). Cada integrante perfecciona una parte del croquis y planea cómo fotografiarla; cada parte tiene su issue, su rama `feature/<issue>-<parte>` y su Pull Request, revisado y aprobado por otro integrante. Todo se registra en el milestone «Práctica 3 · Mi parte del campus».
 
-Para abrir el visor y editor, con Node.js instalado:
+### Ejecutar el visor del campus
 
-```bash
-cd campus-cuajimalpa
-node server.mjs
-```
+**No hace falta Node.js.** Abre `campus-cuajimalpa/Visor_UAM_autonomo.html` con doble clic, de preferencia en Chrome o Edge (en Windows, `Abrir_visor.cmd` lo abre en Edge). El HTML lleva dentro el diseño del equipo (`campus_editado.json`), la georreferencia y las texturas, así que se ve igual que con servidor.
 
-La terminal muestra la dirección que hay que abrir en el navegador (`http://127.0.0.1:8769`). **Guardar cambios** actualiza `campus_editado.json`, `UAM_Cuajimalpa.glb` y `plano_2d.png`. Como el `.glb` y el `.png` son binarios, los Pull Requests se integran uno por uno: quien integra después actualiza su rama con `main`, vuelve a pulsar **Guardar cambios** y confirma el resultado.
+**Guardar cambios** en Chrome o Edge: la primera vez el navegador pide elegir la carpeta `campus-cuajimalpa` (la que contiene el HTML) y permiso para editar archivos. Ahí actualiza `campus_editado.json`, `UAM_Cuajimalpa.glb`, `plano_2d.png`, sus variantes `_sin_marca` (las que copian las apps) y el propio `Visor_UAM_autonomo.html`; al volver a abrirlo con doble clic se ven los cambios. La carpeta se recuerda: después de cerrar el navegador sólo vuelve a pedir el permiso. Si el `campus_editado.json` de la carpeta no es el que abriste (por ejemplo, llegó otro con `git pull`), pregunta antes de sobrescribirlo.
+
+Firefox y Safari no permiten escribir en carpetas: **Guardar cambios** descarga `UAM_Cuajimalpa.glb`, `plano_2d.png` y `campus_editado.json`, que hay que mover a `campus-cuajimalpa/` (con la marca apagada, copiar también el `.glb` y el `.png` como `_sin_marca`); **Abrir datos guardados** recupera un JSON descargado.
+
+Node.js sólo hace falta para desarrollar el visor: después de cambiar `app.js`, `index.html`, algún módulo `.js`, `vendor/` o `texturas/`, `node build.mjs` (dentro de `campus-cuajimalpa/`) vuelve a generar el HTML. `node server.mjs` sigue funcionando como antes (<http://127.0.0.1:8769/Visor_UAM_autonomo.html>) y también actualiza el HTML al guardar.
+
+Como el `.glb`, el `.png` y el HTML se regeneran, los Pull Requests se integran uno por uno: quien integra después actualiza su rama con `main`, vuelve a pulsar **Guardar cambios** y confirma el resultado.
 
 ### Reparto
 
@@ -337,7 +341,7 @@ OpenStreetMap contributors. (s. f.). *OpenStreetMap*. https://www.openstreetmap.
 
 ## Uso de inteligencia artificial
 
-Se utilizó Claude (Anthropic) para elaborar borradores de documentos del repositorio. Se utilizó Codex (OpenAI) para apoyo en el rediseño visual de la app Android y en la redacción inicial de este README. En la Práctica 3 (canchas), se utilizó Claude (Anthropic) para medir las canchas y caminos sobre la imagen satelital, programar su modelo en el visor del campus, generar el mapa de puntos del plan de fotos y redactar borradores del issue, del Pull Request y del plan. El equipo revisó, adaptó y validó el código y la documentación resultantes. En la parte de atrás (Ágora, issue #37), Claude Code (Anthropic), a petición de Max Sánchez, reconstruyó la primera versión de Daniela con las fotos de campo del equipo y la imagen satelital: Ágora, plaza trasera, letras, celosía y costado del edificio. Esa reconstrucción queda pendiente de revisión por el equipo.
+Se utilizó Claude (Anthropic) para elaborar borradores de documentos del repositorio. Se utilizó Codex (OpenAI) para apoyo en el rediseño visual de la app Android y en la redacción inicial de este README. En la Práctica 3 (canchas), se utilizó Claude (Anthropic) para medir las canchas y caminos sobre la imagen satelital, programar su modelo en el visor del campus, generar el mapa de puntos del plan de fotos y redactar borradores del issue, del Pull Request y del plan. El equipo revisó, adaptó y validó el código y la documentación resultantes. En la parte de atrás (Ágora), Daniela usó Claude para apoyar el modelado de su primera versión, según declaró en el issue #37. A petición de Max Sánchez, Claude Code (Anthropic) la reconstruyó con las fotos de campo del equipo y la imagen satelital (Ágora, plaza trasera, letras, celosía y costado del edificio) y adaptó el visor para abrirlo con doble clic, sin Node.js. Ese trabajo queda pendiente de revisión por el equipo.
 
 ## Referencias
 
