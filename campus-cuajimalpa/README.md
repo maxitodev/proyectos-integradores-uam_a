@@ -52,8 +52,20 @@ Cámara «Ágora»: desde el oriente, por fuera de la cara trasera, con la celos
 
 Estimaciones por confirmar en campo: alturas de arcos, mástiles y membrana, altura del talud (5–8 m), posición exacta de las letras y de la malla, y la escalera de la esquina sur, que los árboles tapan en el satélite.
 
-## Abrir
-Con Node.js instalado: Abrir_visor.cmd o node server.mjs. Abrir http://127.0.0.1:8769/Visor_UAM_autonomo.html.
+## Abrir (sin Node.js)
+Doble clic en `Visor_UAM_autonomo.html` (o `Abrir_visor.cmd`, que lo abre en Edge). El HTML lleva dentro el diseño del equipo
+(`campus_editado.json`), `georreferencia.json` y las texturas, así que se ve igual que con servidor.
+
+Guardar cambios en Chrome o Edge: la primera vez pide la carpeta **campus-cuajimalpa** (la que contiene este HTML) y el permiso
+«Permitir editar archivos». Ahí escribe `campus_editado.json`, `UAM_Cuajimalpa.glb`, `plano_2d.png`, sus variantes `_sin_marca` y actualiza el bloque de datos de
+`Visor_UAM_autonomo.html`; al volver a abrirlo con doble clic se ven los cambios. La carpeta se recuerda (IndexedDB); tras cerrar el
+navegador sólo se vuelve a pedir el permiso. Si `campus_editado.json` de la carpeta no es el que se abrió (p. ej. llegó otro con git),
+pregunta antes de sobrescribirlo. Firefox y Safari no permiten escribir en carpetas: descargan los tres archivos (muévelos a la carpeta;
+si la marca está apagada, cópialos también como `_sin_marca`) y con «Abrir datos guardados» se recuperan.
+
+Node.js sólo hace falta para desarrollar: tras cambiar `app.js`, `index.html`, algún módulo (`vegetacion.js`, `agora.js`,
+`plaza_trasera.js`, `geometria.js`, `efectos*.js`, `incrustar.js`), `vendor/` o `texturas/`, ejecutar `node build.mjs` (también incrusta el `campus_editado.json` actual). `node server.mjs` sigue
+funcionando (http://127.0.0.1:8769/Visor_UAM_autonomo.html o `index.html` para probar sin compilar) y también actualiza el HTML al guardar.
 Las bibliotecas locales están en vendor/; no se requiere instalar paquetes.
 
 ## Contrato de archivos
@@ -65,7 +77,7 @@ Las bibliotecas locales están en vendor/; no se requiere instalar paquetes.
 - index.html/app.js: interfaz y generador. node build.mjs recompone el HTML autónomo; no exporta GLB/PNG.
 
 Guardar cambios exporta JSON, GLB y PNG. Hay edición de niveles/desplazamiento de edificios y herramientas para árboles/estacionamientos, con deshacer/rehacer.
-Sin servidor se descargan los archivos; recuperarlos con Abrir datos guardados.
+Sin servidor, en Chrome/Edge se guarda en la carpeta elegida (ver «Abrir»); en otros navegadores se descargan los archivos y se recuperan con Abrir datos guardados.
 Los polígonos usan buildings[].polygons; rects conserva las envolventes. Suelo X/Z, altura Y; X=px-895, Z=py-390 (metersPerPixel=1).
 La vegetación es ilustrativa. Las alturas suponen 3.3 m por nivel; no resuelven sótanos ni topografía.
 
