@@ -615,6 +615,44 @@
         ],
         "color": "#cdc6b8",
         "approximate": true
+      },
+      {
+        "id": "andador_lateral",
+        "name": "Andador lateral junto a la Torre III: sigue del camino oriente hasta el andador sur, entre la malla y el talud (foto de campo 4, banda medida en Esri z19, x 47.5–51.5)",
+        "width": 4,
+        "color": "#8f918b",
+        "points": [
+          [
+            44,
+            -45
+          ],
+          [
+            47.6,
+            -40
+          ],
+          [
+            49.5,
+            -31
+          ],
+          [
+            49.5,
+            28
+          ],
+          [
+            47.8,
+            35
+          ],
+          [
+            43.5,
+            41.4
+          ],
+          [
+            37.5,
+            45.6
+          ]
+        ],
+        "label": "Andador lateral",
+        "approximate": true
       }
     ],
     "planters": [
@@ -920,6 +958,103 @@
           ]
         ],
         "approximate": true
+      },
+      {
+        "id": "talud_costado",
+        "name": "Talud de pasto al oriente de la Torre III, del andador lateral a la orilla del predio, con árboles arriba (foto de campo 4, Esri z19; altura estimada 5–8 m)",
+        "face": "pasto",
+        "stations": [
+          [
+            -46,
+            53,
+            0.3,
+            72.6
+          ],
+          [
+            -38,
+            52.6,
+            3,
+            73.4
+          ],
+          [
+            -24,
+            52.2,
+            5.2,
+            74.4
+          ],
+          [
+            -6,
+            52,
+            6.2,
+            75
+          ],
+          [
+            12,
+            52,
+            6.4,
+            75
+          ],
+          [
+            26,
+            51.8,
+            5.6,
+            74.4
+          ],
+          [
+            34,
+            51.6,
+            3.6,
+            73
+          ],
+          [
+            40,
+            51,
+            1.2,
+            71
+          ]
+        ],
+        "wallSlope": 1.55,
+        "plateau": 2,
+        "rise": 0.25,
+        "trees": [
+          [
+            66,
+            -34
+          ],
+          [
+            71,
+            -26
+          ],
+          [
+            64,
+            -17
+          ],
+          [
+            69,
+            -8
+          ],
+          [
+            65,
+            1
+          ],
+          [
+            71,
+            9
+          ],
+          [
+            64,
+            17
+          ],
+          [
+            70,
+            24
+          ],
+          [
+            67,
+            31
+          ]
+        ],
+        "approximate": true
       }
     ],
     "roads": [
@@ -1025,7 +1160,7 @@
       },
       {
         "id": "camino_oriente",
-        "name": "Camino vehicular oriente: franja de estacionamiento junto a las canchas (sin salida directa a Vasco de Quiroga)",
+        "name": "Camino vehicular oriente: franja de estacionamiento junto a las canchas (sin salida directa a Vasco de Quiroga); el tramo para autos termina hacia z −45 y de ahí sigue el andador lateral (foto de campo 4, Esri z19)",
         "width": 6,
         "points": [
           [
@@ -1049,12 +1184,8 @@
             -62.4
           ],
           [
-            44.1,
-            -32
-          ],
-          [
-            43,
-            -11
+            44,
+            -45
           ]
         ],
         "approximate": true
