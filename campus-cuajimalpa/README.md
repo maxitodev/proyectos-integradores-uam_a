@@ -5,7 +5,9 @@ Torre III es un conjunto integrado (ocho niveles según informe UAM). Auxiliar n
 
 ## Fachadas · revisión 18 octubre
 
-El conjunto principal tiene un generador propio en `cuajimalpaFacades()` de app.js: terracota, gran celosía oscura con pliegues claros, atrio de vidrio, bandas de corredores, dos lucernarios y plaza/rampa esquemáticas. Los detalles se exportan como parte de Edificio_TORRE_III, sin dividirlo en edificios separados. «Acceso · celosía» y «Fachada de vidrio» acercan la cámara; «Campus completo» recupera el contexto del predio.
+El conjunto principal tiene un generador propio en `cuajimalpaFacades()` de app.js: terracota, gran celosía oscura con pliegues claros, atrio de vidrio, bandas de corredores y dos lucernarios. Los detalles se exportan como parte de Edificio_TORRE_III, sin dividirlo en edificios separados. «Fachada · celosía» y «Fachada de vidrio» acercan la cámara; «Campus completo» recupera el contexto del predio.
+
+La revisión del 23 de octubre (más abajo) movió la celosía al remetimiento trasero y quitó la plaza y la rampa esquemáticas del costado.
 
 Referencia: tres fotografías aportadas por Gabriel en la conversación (acceso con «Soy UAM», frente acristalado, entrada desde portería). Son una interpretación visual: dimensiones de fachadas, reparto interior, posición de rampa y orientación de cada frente deben confirmarse en campo. Las fotos no mejoran la precisión geográfica. Se conservan exactamente los polígonos originales, la georreferencia y el encuadre del PNG. Las alturas siguen suponiendo 3.3 m por nivel. `architecture` en los JSON documenta esta revisión; el detalle geométrico se regenera desde app.js.
 
@@ -32,6 +34,23 @@ Con fotos posteriores (desde el camino poniente, desde la sede y desde el lado d
 Líneas, porterías, redes, luminarias, árboles, carpas y alturas son interpretativos (fotos); confirmar en campo con `docs/plan-de-fotos/canchas.md`.
 
 «Canchas» acerca la cámara desde la entrada hacia la sede, como las fotos aéreas. En el modo edición, «Mostrar elementos: Canchas» lista las tres canchas (`cancha_futbol_grande`, `cancha_futbol_rapido`, `cancha_basquetbol`): se mueven, giran o quitan, sus cambios viajan en `elementEdits`/`removedElements` y se pueden deshacer. Los árboles aleatorios no caen sobre canchas, andadores ni la calle.
+
+### Parte de atrás y costado · revisión 23 octubre
+
+Parte de Daniela Nava Martínez (issue #37, PR #45). Evidencia: cinco fotos de campo del 23 oct 2026 (letras y celosía; Ágora desde la plaza y bajo la membrana; costado con andador, talud y torre de escaleras; plaza con el Ágora) y Esri World Imagery z19 rectificada con `georreferencia.json`. Las fotos no se suben al repositorio.
+
+- **Ágora** (`agora.js`, elemento editable `agora_cuajimalpa`). La idea y el programa son de la propuesta original de Daniela: cubierta blanca, dos pantallas, gradas y mesas en el pasto. La forma y el lugar se rehicieron con las fotos y el satélite. La membrana medida tiene 654 m² y su centro en el marco local está en (−15.7, 57); el ancla `architecture.agora.localPosition = [−16, 57]` gira con el edificio, así se ve en su lugar aun sin `campus_editado.json`.
+  - Membrana tensada bajo dos arcos de armadura (clave ≈12.5 y 9 m), tres mástiles con luminaria de anillo, anclas laterales con puntales y cables.
+  - Bocinas line-array colgadas del arco frontal y dos pantallas LED sobre andamio.
+  - Foro de piso oscuro con tope amarillo; seis gradas curvas de concreto café con dos pasillos de narices amarillas.
+  - Terraza de pasto a 2.9 m con muro y barandal, escalera lateral y bajada; seis mesas con techito naranja (posiciones medidas), árboles y personas.
+- **Plaza trasera** (`plaza_trasera.js`): pavimento del remetimiento y andador sur, jardineras-banca circulares con agaves en las posiciones medidas, botes y barandal. Las **letras «soy uam»** (3D, base naranja «Unidad Cuajimalpa») son el elemento editable `letrero_soy_uam`, con ancla `architecture.letrero.localPosition = [2, 37]`. La plaza y la franja del costado copian las caras de la huella, así que siguen el desplazamiento editable de la Torre III; las letras y el Ágora conservan su ancla.
+- **Celosía**: pasa de la cara +u al remetimiento trasero, frente a la plaza y las letras (fotos 1 y 5), y baja hasta el piso de la plaza con un marco delgado. El patrón de la foto 1 (retícula de rombos y cadenas blancas de eslabones huecos que se cruzan en «X») es una textura de repetición sobre un plano. La cámara «Fachada · celosía» la mira desde la plaza.
+- **Costado +u** (foto 4): ahí no hay estacionamiento. Se quitaron la plaza con rayas naranjas, la rampa, las jardineras y el letrero plano que había; queda la franja con setos, mesas y malla, el **andador lateral** de asfalto (`walkways.andador_lateral`) que sigue hasta el andador sur, y un **talud de pasto** con arboleda arriba (`terrain.talud_costado`, `face: 'pasto'`, 27 árboles con `treeSize` 1.05; la ortofoto muestra copa continua). El andador lateral se dibuja como una sola franja con uniones a inglete. La cara +u lleva ventanas verticales en los niveles bajos y vidrio con parasoles en los altos; las dos **torres de escaleras** tienen balcones abiertos con barandal y tramos de escalera visibles en las caras que dan a la franja (en la foto 4 se ve la de la torre E) y, en la torre S, también hacia la plaza trasera. El `camino_oriente` termina para autos hacia z −45, como en el satélite.
+
+Cámara «Ágora»: desde el oriente, por fuera de la cara trasera, con la celosía y las letras a la derecha (el foro está pegado al muro del bloque poniente, así que desde atrás del edificio no se ve); si se quita el Ágora apunta a su ancla. Filtro «Portería, Ágora y letras» en el modo edición. La casilla «Árboles» también oculta los árboles del Ágora y de la plaza. El GLB pasa de 0.81 a 1.29 MB (el Ágora suma unos 240 KB porque comparte geometrías y materiales). Huellas, IDs, georreferencia y plano de 1040×1000 sin cambios. Para el verificador del profesor: `Rampa_acceso_aproximada` ya no existe (era la rampa del costado) y `elementEdits` no está vacío.
+
+Estimaciones por confirmar en campo: alturas de arcos, mástiles y membrana, altura del talud (5–8 m), posición exacta de las letras y de la malla, y la escalera de la esquina sur, que los árboles tapan en el satélite.
 
 ## Abrir
 Con Node.js instalado: Abrir_visor.cmd o node server.mjs. Abrir http://127.0.0.1:8769/Visor_UAM_autonomo.html.
