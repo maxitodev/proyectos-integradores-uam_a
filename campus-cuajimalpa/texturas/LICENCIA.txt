@@ -6,3 +6,4 @@ Reducidas a 512 px. Sólo afectan la vista del visor; el GLB y el plano 2D conse
 - ladrillo.jpg <- Bricks060
 - muro.jpg     <- Concrete035
 - asfalto2.jpg <- Asphalt033
+- *_n.jpg: mapas de relieve (normales) generados localmente a partir de las texturas de color de esta carpeta con generar_normales.py; derivados CC0.
