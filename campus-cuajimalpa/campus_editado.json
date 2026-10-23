@@ -1059,7 +1059,21 @@
         ],
         "approximate": true
       }
-    ]
+    ],
+    "agora": {
+      "localPosition": [
+        -16,
+        57
+      ],
+      "fuente": "Membrana medida sobre Esri World Imagery z19 (centroide local (-15.7, 57.0), 647 m²) y fotos de campo del 23 oct 2026; diseño original de Daniela Nava Martínez (issue #37, PR #45). Aproximado."
+    },
+    "letrero": {
+      "localPosition": [
+        2,
+        37
+      ],
+      "fuente": "Letras «soy uam» frente a la celosía de la plaza trasera, según fotos de campo del 23 oct 2026. Posición aproximada."
+    }
   },
   "showCopyright": false,
   "copyrightStyle": {
@@ -1096,11 +1110,6 @@
     "tree_916.1556895077229_290.80114256124943": {
       "offsetX": 0.3443104922771454,
       "offsetZ": 0.19885743875056505,
-      "rotation": 0
-    },
-    "agora_cuajimalpa": {
-      "offsetX": 37,
-      "offsetZ": 17.5,
       "rotation": 0
     }
   }
